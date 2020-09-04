@@ -17,7 +17,7 @@ public class Contact implements Comparable<Contact> {
     private Address address;
     private Date birthDate;
 
-    public Contact(int id,  String firstName, String lastName, String email, Company company,
+    public Contact(int id, String firstName, String lastName, String email, Company company,
                    PhoneNumber phoneNumber, Group group, Address address, Date birthDate) {
         this.id = id;
         this.firstName = firstName;
@@ -112,7 +112,7 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return  StringUtils.substring(firstName,0,1)+
+        return StringUtils.substring(firstName, 0, 1) +
                 StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
@@ -122,6 +122,6 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public int compareTo(Contact otherContact) {
-       return this.firstName.compareTo(otherContact.firstName);
+        return this.firstName.compareTo(otherContact.firstName);
     }
 }

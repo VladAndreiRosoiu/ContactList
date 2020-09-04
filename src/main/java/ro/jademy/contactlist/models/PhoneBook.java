@@ -45,13 +45,16 @@ public class PhoneBook {
                     //this method should first ask for a letter, the first letter of first name then return a set bases on that letter
                     //after, to select a contact the user should input the first name of that contact
                     //if there are more than one firstName that matches input, user should be prompted to enter the lastname of the contact
-                    Set<Contact> tempContactSet= getContactsSubGroupBasedOnFirstLetter();
+                    Set<Contact> tempContactSet = getContactsSubGroupBasedOnFirstLetter();
                     searchContactByFirstName(tempContactSet);
                     displaySearchedContactInfo();
-                    editContact();
+                    showContactSubMenu();
+                    option = sc.nextInt();
+                    doContactSubMenu(option);
                     break;
                 case 3:
                     //search contact
+                    showSearchMenu();
                     break;
                 case 4:
                     //add new contact
@@ -95,51 +98,76 @@ public class PhoneBook {
         System.out.println("Please enter option:");
     }
 
-    private void displayAllContacts(){
+    private void displayAllContacts() {
         System.out.println();
         System.out.println("  FIRST NAME      LAST NAME      PHONE NUMBER");
-        for (Contact contact: contacts) {
+        for (Contact contact : contacts) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
         }
     }
 
-    private Set<Contact> getContactsSubGroupBasedOnFirstLetter(){
+    private Set<Contact> getContactsSubGroupBasedOnFirstLetter() {
         System.out.println("Please filter contact list by entering first letter of the first name");
-        String input=sc.next();
-        Set<Contact> subGroupContactSet=new TreeSet<>();
-        for(Contact contact:contacts){
-            if (contact.getFirstName().substring(0,1).equals(input.toUpperCase())){
+        String input = sc.next();
+        Set<Contact> subGroupContactSet = new TreeSet<>();
+        for (Contact contact : contacts) {
+            if (contact.getFirstName().substring(0, 1).equals(input.toUpperCase())) {
                 subGroupContactSet.add(contact);
             }
         }
-        for (Contact contact:subGroupContactSet){
+        for (Contact contact : subGroupContactSet) {
             System.out.println(contact);
         }
         return subGroupContactSet;
     }
 
-    private void searchContactByFirstName(Set<Contact> tempContactSet){
+    private void searchContactByFirstName(Set<Contact> tempContactSet) {
         System.out.println("Please enter first name:");
-        String input=sc.next();
-        for (Contact contact: tempContactSet){
-            if (contact.getFirstName().toLowerCase().equals(input.toLowerCase())){
-                searchedContact=contact;
+        String input = sc.next();
+        for (Contact contact : tempContactSet) {
+            if (contact.getFirstName().toLowerCase().equals(input.toLowerCase())) {
+                searchedContact = contact;
             }
         }
 
     }
 
-    private void displaySearchedContactInfo(){
-        System.out.println("Contact "+searchedContact.getFirstName() + searchedContact.getLastName());
+    private void displaySearchedContactInfo() {
+        System.out.println("Contact " + searchedContact.getFirstName() + searchedContact.getLastName());
         System.out.println("Phone number : " + searchedContact.getPhoneNumber().getCountryCode() + searchedContact.getPhoneNumber().getPhoneNumber());
         System.out.println("Company : " + searchedContact.getCompany().getName());
         System.out.println("Email : " + searchedContact.getEmail());
         System.out.println("Address : City " + searchedContact.getAddress().getCity());
-        System.out.println("Group : "+ searchedContact.getGroup());
+        System.out.println("Group : " + searchedContact.getGroup());
     }
 
-    private void editContact(){
-        System.out.println("Started editing contact");
+    private void doContactSubMenu(int option) {
+        switch (option) {
+            case 1:
+                //edit contact
+                break;
+            case 2:
+                if (contacts.contains(searchedContact)) {
+                    contacts.remove(searchedContact);
+                    System.out.println("Contact removed!");
+                    searchedContact = null;
+                    break;
+                }
+            case 3:
+                //add to blacklist - create a blacklist set and store it, later this set can be displayed --- add option in menu
+                break;
+            case 4:
+                searchedContact.setGroup(Group.FAVORITE);
+                System.out.println("Contact added to favorites!");
+                break;
+            case 5:
+                break;
+            default:
+                System.out.println("Option not found!");
+                break;
+        }
     }
+
+
 }
