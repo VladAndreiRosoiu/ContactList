@@ -2,7 +2,7 @@ package ro.jademy.contactlist.models;
 
 
 public class PhoneBook {
-
+    //TODO
     // Phone Book MAIN MENU
     // 1. Display contacts (firstName, lastName, phoneNumber)
     // 2. Select contact (By index (A-Z) -> create a subset of first letter of the contact, and after that by firstName)
