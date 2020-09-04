@@ -9,6 +9,7 @@ public class Main {
 
         for (Contact contact: DataProvider.contacts()) {
             System.out.println("_________________________________________________");
+            System.out.println();
             System.out.println(contact);
         }
     }
