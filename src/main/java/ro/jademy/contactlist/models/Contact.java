@@ -112,7 +112,8 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return  StringUtils.center(firstName, 15, " ") +
+        return  StringUtils.substring(firstName,0,1)+
+                StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
                 StringUtils.center(String.valueOf(phoneNumber.getPhoneNumber()), 15, " ");
