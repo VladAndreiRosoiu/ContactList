@@ -143,24 +143,14 @@ public class PhoneBook {
         System.out.println("Please enter first name:");
         String input = sc.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
-            System.out.println("Contact found!");
-        } else {
-            System.out.println("Contact not found!");
-        }
+        setSearchedContact(contactOptional);
     }
 
     private void searchContactByLastName() {
         System.out.println("Please enter last name:");
         String input = sc.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
-            System.out.println("Contact found!");
-        } else {
-            System.out.println("Contact not found!");
-        }
+        setSearchedContact(contactOptional);
     }
 
     private void searchContactByPhoneNumber() {
@@ -168,10 +158,14 @@ public class PhoneBook {
         sc.skip("\n");
         String phoneNumber = sc.nextLine();
         Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
+        setSearchedContact(contactOptional);
+    }
+
+    private void setSearchedContact(Optional<Contact> contactOptional){
+        if (contactOptional.isPresent()){
+            searchedContact=contactOptional.get();
             System.out.println("Contact found!");
-        } else {
+        }else {
             System.out.println("Contact not found!");
         }
     }
