@@ -3,6 +3,7 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class Contact implements Comparable<Contact> {
 
@@ -137,5 +138,26 @@ public class Contact implements Comparable<Contact> {
     @Override
     public int compareTo(Contact otherContact) {
         return this.firstName.compareTo(otherContact.firstName);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return id == contact.id &&
+                Objects.equals(firstName, contact.firstName) &&
+                Objects.equals(lastName, contact.lastName) &&
+                Objects.equals(email, contact.email) &&
+                Objects.equals(company, contact.company) &&
+                Objects.equals(phoneNumber, contact.phoneNumber) &&
+                group == contact.group &&
+                Objects.equals(address, contact.address) &&
+                Objects.equals(birthDate, contact.birthDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, firstName, lastName, email, company, phoneNumber, group, address, birthDate);
     }
 }

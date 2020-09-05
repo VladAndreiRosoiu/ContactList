@@ -1,6 +1,7 @@
 package ro.jademy.contactlist.models;
 
 
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
@@ -27,6 +28,7 @@ public class PhoneBook {
     private Set<Contact> contacts;
     private Scanner sc = new Scanner(System.in);
     private Contact searchedContact;
+    private Optional<Contact> contactOptional;
 
     public PhoneBook(Set<Contact> contacts) {
         this.contacts = contacts;
@@ -133,17 +135,6 @@ public class PhoneBook {
             System.out.println(contact);
         }
         return subGroupContactSet;
-    }
-
-    private void searchContactByFirstName(Set<Contact> tempContactSet) {
-        System.out.println("Please enter first name:");
-        String input = sc.next();
-        for (Contact contact : tempContactSet) {
-            if (contact.getFirstName().toLowerCase().equals(input.toLowerCase())) {
-                searchedContact = contact;
-            }
-        }
-
     }
 
     private void displaySearchedContactInfo() {
@@ -263,27 +254,6 @@ public class PhoneBook {
         }
     }
 
-    private void searchContactByLastName() {
-        System.out.println("Please enter last name:");
-        String input = sc.next();
-        for (Contact contact : contacts) {
-            if (contact.getFirstName().toLowerCase().equals(input.toLowerCase())) {
-                searchedContact = contact;
-
-            }
-        }
-    }
-
-    private void searchContactByPhoneNumber() {
-        System.out.println("Please enter phone number:");
-        String phoneNumber = sc.nextLine();
-        for (Contact contact : contacts) {
-            if (contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)) {
-                searchedContact = contact;
-            }
-        }
-    }
-
     private void addNewContact() {
         Contact addNewContact = new Contact();
         String input, input1;
@@ -300,4 +270,42 @@ public class PhoneBook {
         addNewContact.setLastName(input);
         contacts.add(addNewContact);
     }
+
+    private void searchContactByFirstName(Set<Contact> tempContactSet) {
+        System.out.println("Please enter first name:");
+        String input = sc.next().toLowerCase();
+        contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
+    }
+
+    private void searchContactByLastName() {
+        System.out.println("Please enter last name:");
+        String input = sc.next().toLowerCase();
+        contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
+    }
+
+    private void searchContactByPhoneNumber() {
+        System.out.println("Please enter phone number:");
+        String phoneNumber = sc.nextLine();
+        contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
+
+    }
+
 }
