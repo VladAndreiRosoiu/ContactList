@@ -88,6 +88,17 @@ public class PhoneBook {
 
     private void showEditSubMenu() {
         //TODO sub menu To edit all attributes (Return to Contact Menu)
+        System.out.println("Edit Menu:");
+        System.out.println("1 - Edit first name");
+        System.out.println("2 - Edit last name");
+        System.out.println("3 - Edit email");
+        System.out.println("4 - Edit company");
+        System.out.println("5 - Edit phone number");
+        System.out.println("6 - Edit contact group");
+        System.out.println("7 - Edit address");
+        System.out.println("8 - Edit birth date");
+        System.out.println("9 - Return");
+        System.out.println("Please enter option:");
     }
 
     private void showSearchMenu() {
@@ -142,10 +153,71 @@ public class PhoneBook {
         System.out.println("Group : " + searchedContact.getGroup());
     }
 
+    private void doEditContact(int option){
+        String input;
+        switch (option){
+            case 1:
+                System.out.println("Selected contact first name is :"+searchedContact.getFirstName());
+                System.out.println("Please enter new first name:");
+                input = sc.next();
+                searchedContact.setFirstName(input);
+                System.out.println("Selected contact first name has been updated to " + searchedContact.getFirstName());
+                break;
+            case 2:
+                System.out.println("Selected contact last name is :"+searchedContact.getLastName());
+                System.out.println("Please enter new last name:");
+                input = sc.next();
+                searchedContact.setLastName(input);
+                System.out.println("Selected contact first name has been updated to " + searchedContact.getLastName());
+                break;
+            case 3:
+                System.out.println("Selected contact email address is :"+searchedContact.getEmail());
+                System.out.println("Please enter new email address:");
+                input = sc.nextLine();
+                searchedContact.setEmail(input);
+                System.out.println("Selected contact email address has been updated to " + searchedContact.getEmail());
+                break;
+            case 4:
+                System.out.println("Selected contact company name is :"+searchedContact.getCompany().getName());
+                System.out.println("Please enter new company name:");
+                input = sc.nextLine();
+                searchedContact.getCompany().setName(input);
+                System.out.println("Selected contact company name has been updated to " + searchedContact.getCompany().getName());
+                break;
+            case 5:
+                System.out.println("Selected contact phone number is :"+searchedContact.getPhoneNumber().getPhoneNumber());
+                System.out.println("Please enter new phone number :");
+                input = sc.nextLine();
+                searchedContact.getPhoneNumber().setPhoneNumber(input);
+                System.out.println("Selected contact phone number has been updated to " + searchedContact.getPhoneNumber().getPhoneNumber());
+                break;
+            case 6:
+                System.out.println("Selected contact group is :"+searchedContact.getGroup());
+                //TODO
+                break;
+            case 7:
+                System.out.println("Selected contact address is : " + searchedContact.getAddress().getCity());
+                //TODO
+                break;
+            case 8:
+                System.out.println("Selected contact birth date is " + searchedContact.getBirthDate());
+                //TODO
+                break;
+            case 9:
+                System.out.println("Returning back to main menu!");
+                break;
+            default:
+                break;
+        }
+    }
+
     private void doContactSubMenu(int option) {
         switch (option) {
             case 1:
                 //edit contact
+                showEditSubMenu();
+                int option2=sc.nextInt();
+                doEditContact(option2);
                 break;
             case 2:
                 if (contacts.contains(searchedContact)) {
