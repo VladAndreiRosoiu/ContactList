@@ -72,6 +72,9 @@ public class PhoneBook {
         } while (true);
     }
 
+
+    // PRINT MENU METHODS ______________________________________________________________________________________________
+
     private void showMenu() {
         System.out.println("Menu:");
         System.out.println("1 - Display all contacts");
@@ -114,32 +117,66 @@ public class PhoneBook {
         System.out.println("Please enter option:");
     }
 
-    private void displayAllContacts() {
-        System.out.println();
-        System.out.println("  FIRST NAME      LAST NAME      PHONE NUMBER");
-        for (Contact contact : contacts) {
-            System.out.println("_________________________________________________");
-            System.out.println(contact);
+    // SEARCH CONTACT RELATED METHODS __________________________________________________________________________________
+
+    private void doSearchContact(int option) {
+        switch (option) {
+            case 1:
+                searchContactByFirstName(contacts);
+                break;
+            case 2:
+                searchContactByLastName();
+                break;
+            case 3:
+                searchContactByPhoneNumber();
+                break;
+            case 4:
+                System.out.println("Returning to main menu!");
+                break;
+            default:
+                break;
+
         }
     }
 
-    private Set<Contact> getContactsSubGroupBasedOnFirstLetter() {
-        System.out.println("Please filter contact list by entering first letter of the first name");
-        String input = sc.next();
-        Set<Contact> contactSubGroupSet = new TreeSet<>(contacts.stream().filter(contact -> contact.getFirstName().substring(0, 1).toLowerCase().equals(input))
-                .collect(Collectors.toSet()));
-        contactSubGroupSet.stream().forEach(contact -> System.out.println(contact));
-        return contactSubGroupSet;
+    private void searchContactByFirstName(Set<Contact> tempContactSet) {
+        System.out.println("Please enter first name:");
+        String input = sc.next().toLowerCase();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
 
-    private void displaySearchedContactInfo() {
-        System.out.println("Contact " + searchedContact.getFirstName() + " " + searchedContact.getLastName());
-        System.out.println("Phone number : " + searchedContact.getPhoneNumber().getCountryCode() + " " + searchedContact.getPhoneNumber().getPhoneNumber());
-        System.out.println("Company : " + searchedContact.getCompany().getName());
-        System.out.println("Email : " + searchedContact.getEmail());
-        System.out.println("Address : City " + searchedContact.getAddress().getCity());
-        System.out.println("Group : " + searchedContact.getGroup());
+    private void searchContactByLastName() {
+        System.out.println("Please enter last name:");
+        String input = sc.next().toLowerCase();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
+
+    private void searchContactByPhoneNumber() {
+        System.out.println("Please enter phone number:");
+        sc.skip("\n");
+        String phoneNumber = sc.nextLine();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
+        if (contactOptional.isPresent()) {
+            searchedContact = contactOptional.get();
+            System.out.println("Contact found!");
+        } else {
+            System.out.println("Contact not found!");
+        }
+    }
+
+    // CONTACT EDITING RELATED METHODS _________________________________________________________________________________
 
     private void doEditContact(int option) {
         String input;
@@ -229,25 +266,38 @@ public class PhoneBook {
         }
     }
 
-    private void doSearchContact(int option) {
-        switch (option) {
-            case 1:
-                searchContactByFirstName(contacts);
-                break;
-            case 2:
-                searchContactByLastName();
-                break;
-            case 3:
-                searchContactByPhoneNumber();
-                break;
-            case 4:
-                System.out.println("Returning to main menu!");
-                break;
-            default:
-                break;
+    // PRINT CONTACTS && CONTACT INFO __________________________________________________________________________________
 
+    private void displayAllContacts() {
+        System.out.println();
+        System.out.println("  FIRST NAME      LAST NAME      PHONE NUMBER");
+        for (Contact contact : contacts) {
+            System.out.println("_________________________________________________");
+            System.out.println(contact);
         }
     }
+
+    private void displaySearchedContactInfo() {
+        System.out.println("Contact " + searchedContact.getFirstName() + " " + searchedContact.getLastName());
+        System.out.println("Phone number : " + searchedContact.getPhoneNumber().getCountryCode() + " " + searchedContact.getPhoneNumber().getPhoneNumber());
+        System.out.println("Company : " + searchedContact.getCompany().getName());
+        System.out.println("Email : " + searchedContact.getEmail());
+        System.out.println("Address : City " + searchedContact.getAddress().getCity());
+        System.out.println("Group : " + searchedContact.getGroup());
+    }
+
+    // OTHER METHODS ___________________________________________________________________________________________________
+
+    private Set<Contact> getContactsSubGroupBasedOnFirstLetter() {
+        System.out.println("Please filter contact list by entering first letter of the first name");
+        String input = sc.next();
+        Set<Contact> contactSubGroupSet = new TreeSet<>(contacts.stream().filter(contact -> contact.getFirstName().substring(0, 1).toLowerCase().equals(input))
+                .collect(Collectors.toSet()));
+        contactSubGroupSet.stream().forEach(contact -> System.out.println(contact));
+        return contactSubGroupSet;
+    }
+
+    // ADDING NEW CONTACT RELATED METHOD _______________________________________________________________________________
 
     private void addNewContact() {
         Contact addNewContact = new Contact();
@@ -266,41 +316,5 @@ public class PhoneBook {
         contacts.add(addNewContact);
     }
 
-    private void searchContactByFirstName(Set<Contact> tempContactSet) {
-        System.out.println("Please enter first name:");
-        String input = sc.next().toLowerCase();
-        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
-            System.out.println("Contact found!");
-        } else {
-            System.out.println("Contact not found!");
-        }
-    }
-
-    private void searchContactByLastName() {
-        System.out.println("Please enter last name:");
-        String input = sc.next().toLowerCase();
-        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
-            System.out.println("Contact found!");
-        } else {
-            System.out.println("Contact not found!");
-        }
-    }
-
-    private void searchContactByPhoneNumber() {
-        System.out.println("Please enter phone number:");
-        sc.skip("\n");
-        String phoneNumber = sc.nextLine();
-        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
-        if (contactOptional.isPresent()) {
-            searchedContact = contactOptional.get();
-            System.out.println("Contact found!");
-        } else {
-            System.out.println("Contact not found!");
-        }
-    }
 
 }
