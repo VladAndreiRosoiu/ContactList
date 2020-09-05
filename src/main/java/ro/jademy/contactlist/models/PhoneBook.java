@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 public class PhoneBook {
     //TODO
@@ -28,7 +29,7 @@ public class PhoneBook {
     private Set<Contact> contacts;
     private Scanner sc = new Scanner(System.in);
     private Contact searchedContact;
-    private Optional<Contact> contactOptional;
+
 
     public PhoneBook(Set<Contact> contacts) {
         this.contacts = contacts;
@@ -43,8 +44,7 @@ public class PhoneBook {
                     displayAllContacts();
                     break;
                 case 2:
-                    Set<Contact> tempContactSet = getContactsSubGroupBasedOnFirstLetter();
-                    searchContactByFirstName(tempContactSet);
+                    searchContactByFirstName(getContactsSubGroupBasedOnFirstLetter());
                     displaySearchedContactInfo();
                     showContactSubMenu();
                     option = sc.nextInt();
@@ -56,6 +56,7 @@ public class PhoneBook {
                     option = sc.nextInt();
                     doSearchContact(option);
                     displaySearchedContactInfo();
+                    showEditSubMenu();
                     option = sc.nextInt();
                     doContactSubMenu(option);
                     break;
@@ -125,16 +126,10 @@ public class PhoneBook {
     private Set<Contact> getContactsSubGroupBasedOnFirstLetter() {
         System.out.println("Please filter contact list by entering first letter of the first name");
         String input = sc.next();
-        Set<Contact> subGroupContactSet = new TreeSet<>();
-        for (Contact contact : contacts) {
-            if (contact.getFirstName().substring(0, 1).equals(input.toUpperCase())) {
-                subGroupContactSet.add(contact);
-            }
-        }
-        for (Contact contact : subGroupContactSet) {
-            System.out.println(contact);
-        }
-        return subGroupContactSet;
+        Set<Contact> contactSubGroupSet = new TreeSet<>(contacts.stream().filter(contact -> contact.getFirstName().substring(0, 1).toLowerCase().equals(input))
+                .collect(Collectors.toSet()));
+        contactSubGroupSet.stream().forEach(contact -> System.out.println(contact));
+        return contactSubGroupSet;
     }
 
     private void displaySearchedContactInfo() {
@@ -274,7 +269,7 @@ public class PhoneBook {
     private void searchContactByFirstName(Set<Contact> tempContactSet) {
         System.out.println("Please enter first name:");
         String input = sc.next().toLowerCase();
-        contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getFirstName().toLowerCase().equals(input)).findAny();
         if (contactOptional.isPresent()) {
             searchedContact = contactOptional.get();
             System.out.println("Contact found!");
@@ -286,7 +281,7 @@ public class PhoneBook {
     private void searchContactByLastName() {
         System.out.println("Please enter last name:");
         String input = sc.next().toLowerCase();
-        contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getLastName().toLowerCase().equals(input)).findAny();
         if (contactOptional.isPresent()) {
             searchedContact = contactOptional.get();
             System.out.println("Contact found!");
@@ -297,15 +292,15 @@ public class PhoneBook {
 
     private void searchContactByPhoneNumber() {
         System.out.println("Please enter phone number:");
+        sc.skip("\n");
         String phoneNumber = sc.nextLine();
-        contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
+        Optional<Contact> contactOptional = contacts.stream().filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
         if (contactOptional.isPresent()) {
             searchedContact = contactOptional.get();
             System.out.println("Contact found!");
         } else {
             System.out.println("Contact not found!");
         }
-
     }
 
 }
