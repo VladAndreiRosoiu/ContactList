@@ -1,5 +1,7 @@
 package ro.jademy.contactlist.models;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Objects;
 
 public class PhoneNumber {
@@ -8,13 +10,13 @@ public class PhoneNumber {
     private String countryCode;     // +40 - RO
 
     public PhoneNumber(String phoneNumber) {  // constructor with default countryCode
-        this.phoneNumber = phoneNumber;       // for Romanian contacts
         this.countryCode = "+44";
+        this.phoneNumber = phoneNumber;       // for Romanian contacts
     }
 
-    public PhoneNumber(String phoneNumber, String countryCode) {
-        this.phoneNumber = phoneNumber;
+    public PhoneNumber(String countryCode, String phoneNumber) {
         this.countryCode = countryCode;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPhoneNumber() {

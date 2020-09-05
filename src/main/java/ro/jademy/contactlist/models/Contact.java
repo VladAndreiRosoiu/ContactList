@@ -17,6 +17,8 @@ public class Contact implements Comparable<Contact> {
     private Address address;
     private Date birthDate;
 
+    public Contact(){}
+
     public Contact(int id, String firstName, String lastName, String email, Company company,
                    PhoneNumber phoneNumber, Group group, Address address, Date birthDate) {
         this.id = id;
@@ -28,6 +30,18 @@ public class Contact implements Comparable<Contact> {
         this.group = group;
         this.address = address;
         this.birthDate = birthDate;
+    }
+
+    public Contact(String firstName, String lastName, PhoneNumber phoneNumber) {
+        this.id = 0;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = null;
+        this.company = null;
+        this.phoneNumber = phoneNumber;
+        this.group = null;
+        this.address = null;
+        this.birthDate = null;
     }
 
     public int getId() {

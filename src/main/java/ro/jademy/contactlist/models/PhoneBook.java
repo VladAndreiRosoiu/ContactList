@@ -41,10 +41,6 @@ public class PhoneBook {
                     displayAllContacts();
                     break;
                 case 2:
-                    //select contact
-                    //this method should first ask for a letter, the first letter of first name then return a set bases on that letter
-                    //after, to select a contact the user should input the first name of that contact
-                    //if there are more than one firstName that matches input, user should be prompted to enter the lastname of the contact
                     Set<Contact> tempContactSet = getContactsSubGroupBasedOnFirstLetter();
                     searchContactByFirstName(tempContactSet);
                     displaySearchedContactInfo();
@@ -55,9 +51,15 @@ public class PhoneBook {
                 case 3:
                     //search contact
                     showSearchMenu();
+                    option = sc.nextInt();
+                    doSearchContact(option);
+                    displaySearchedContactInfo();
+                    option = sc.nextInt();
+                    doContactSubMenu(option);
                     break;
                 case 4:
                     //add new contact
+                    addNewContact();
                     break;
                 case 5:
                     //exit app
@@ -103,9 +105,9 @@ public class PhoneBook {
 
     private void showSearchMenu() {
         System.out.println("1 - Search contact by first name");
-        System.out.println("1 - Search contact by last name");
-        System.out.println("1 - Search contact by phone number");
-        System.out.println("1 - Return");
+        System.out.println("2 - Search contact by last name");
+        System.out.println("3 - Search contact by phone number");
+        System.out.println("4 - Return");
         System.out.println("Please enter option:");
     }
 
@@ -145,54 +147,54 @@ public class PhoneBook {
     }
 
     private void displaySearchedContactInfo() {
-        System.out.println("Contact " + searchedContact.getFirstName() + searchedContact.getLastName());
-        System.out.println("Phone number : " + searchedContact.getPhoneNumber().getCountryCode() + searchedContact.getPhoneNumber().getPhoneNumber());
+        System.out.println("Contact " + searchedContact.getFirstName() + " " + searchedContact.getLastName());
+        System.out.println("Phone number : " + searchedContact.getPhoneNumber().getCountryCode() + " " + searchedContact.getPhoneNumber().getPhoneNumber());
         System.out.println("Company : " + searchedContact.getCompany().getName());
         System.out.println("Email : " + searchedContact.getEmail());
         System.out.println("Address : City " + searchedContact.getAddress().getCity());
         System.out.println("Group : " + searchedContact.getGroup());
     }
 
-    private void doEditContact(int option){
+    private void doEditContact(int option) {
         String input;
-        switch (option){
+        switch (option) {
             case 1:
-                System.out.println("Selected contact first name is :"+searchedContact.getFirstName());
+                System.out.println("Selected contact first name is: " + searchedContact.getFirstName());
                 System.out.println("Please enter new first name:");
                 input = sc.next();
                 searchedContact.setFirstName(input);
                 System.out.println("Selected contact first name has been updated to " + searchedContact.getFirstName());
                 break;
             case 2:
-                System.out.println("Selected contact last name is :"+searchedContact.getLastName());
+                System.out.println("Selected contact last name is :" + searchedContact.getLastName());
                 System.out.println("Please enter new last name:");
                 input = sc.next();
                 searchedContact.setLastName(input);
                 System.out.println("Selected contact first name has been updated to " + searchedContact.getLastName());
                 break;
             case 3:
-                System.out.println("Selected contact email address is :"+searchedContact.getEmail());
+                System.out.println("Selected contact email address is :" + searchedContact.getEmail());
                 System.out.println("Please enter new email address:");
                 input = sc.nextLine();
                 searchedContact.setEmail(input);
                 System.out.println("Selected contact email address has been updated to " + searchedContact.getEmail());
                 break;
             case 4:
-                System.out.println("Selected contact company name is :"+searchedContact.getCompany().getName());
+                System.out.println("Selected contact company name is :" + searchedContact.getCompany().getName());
                 System.out.println("Please enter new company name:");
                 input = sc.nextLine();
                 searchedContact.getCompany().setName(input);
                 System.out.println("Selected contact company name has been updated to " + searchedContact.getCompany().getName());
                 break;
             case 5:
-                System.out.println("Selected contact phone number is :"+searchedContact.getPhoneNumber().getPhoneNumber());
+                System.out.println("Selected contact phone number is :" + searchedContact.getPhoneNumber().getPhoneNumber());
                 System.out.println("Please enter new phone number :");
                 input = sc.nextLine();
                 searchedContact.getPhoneNumber().setPhoneNumber(input);
                 System.out.println("Selected contact phone number has been updated to " + searchedContact.getPhoneNumber().getPhoneNumber());
                 break;
             case 6:
-                System.out.println("Selected contact group is :"+searchedContact.getGroup());
+                System.out.println("Selected contact group is :" + searchedContact.getGroup());
                 //TODO
                 break;
             case 7:
@@ -216,7 +218,7 @@ public class PhoneBook {
             case 1:
                 //edit contact
                 showEditSubMenu();
-                int option2=sc.nextInt();
+                int option2 = sc.nextInt();
                 doEditContact(option2);
                 break;
             case 2:
@@ -241,5 +243,61 @@ public class PhoneBook {
         }
     }
 
+    private void doSearchContact(int option) {
+        switch (option) {
+            case 1:
+                searchContactByFirstName(contacts);
+                break;
+            case 2:
+                searchContactByLastName();
+                break;
+            case 3:
+                searchContactByPhoneNumber();
+                break;
+            case 4:
+                System.out.println("Returning to main menu!");
+                break;
+            default:
+                break;
 
+        }
+    }
+
+    private void searchContactByLastName() {
+        System.out.println("Please enter last name:");
+        String input = sc.next();
+        for (Contact contact : contacts) {
+            if (contact.getFirstName().toLowerCase().equals(input.toLowerCase())) {
+                searchedContact = contact;
+
+            }
+        }
+    }
+
+    private void searchContactByPhoneNumber() {
+        System.out.println("Please enter phone number:");
+        String phoneNumber = sc.nextLine();
+        for (Contact contact : contacts) {
+            if (contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)) {
+                searchedContact = contact;
+            }
+        }
+    }
+
+    private void addNewContact() {
+        Contact addNewContact = new Contact();
+        String input, input1;
+        System.out.println("Please enter country code:");
+        input = sc.next();
+        System.out.println("Please enter phone number");
+        input1 = sc.next();
+        addNewContact.setPhoneNumber(new PhoneNumber(input, input1));
+        System.out.println("Please enter first name:");
+        input = sc.next();
+        addNewContact.setFirstName(input);
+        System.out.println("Please enter last name:");
+        input = sc.next();
+        addNewContact.setLastName(input);
+        contacts.add(addNewContact);
+    }
 }
