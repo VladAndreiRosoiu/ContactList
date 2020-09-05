@@ -17,7 +17,11 @@ public class Contact implements Comparable<Contact> {
     private Address address;
     private Date birthDate;
 
-    public Contact(int id,  String firstName, String lastName, String email, Company company,
+    public Contact() {
+
+    }
+
+    public Contact(int id, String firstName, String lastName, String email, Company company,
                    PhoneNumber phoneNumber, Group group, Address address, Date birthDate) {
         this.id = id;
         this.firstName = firstName;
@@ -28,6 +32,10 @@ public class Contact implements Comparable<Contact> {
         this.group = group;
         this.address = address;
         this.birthDate = birthDate;
+    }
+
+    public Contact(String firstName, String lastName, PhoneNumber phoneNumber) {
+        this(0, firstName, lastName, null, null, phoneNumber, null, null, null);
     }
 
     public int getId() {
@@ -112,7 +120,8 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return  StringUtils.center(firstName, 15, " ") +
+        return  StringUtils.substring(firstName, 0, 1) +
+                StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
                 StringUtils.center(String.valueOf(phoneNumber.getPhoneNumber()), 15, " ");
