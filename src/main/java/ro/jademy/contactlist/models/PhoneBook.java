@@ -214,6 +214,8 @@ public class PhoneBook {
                 String anotherFirstName = INPUT.next();
                 searchForContact.setFirstName(anotherFirstName);
                 System.out.println("Updated to: " + searchForContact.getFirstName());
+                contacts.remove(searchForContact);
+                contacts.add(searchForContact);
                 break;
             case 2: // edit last name
                 System.out.println("You have selected: " + searchForContact.getLastName());
