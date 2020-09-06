@@ -29,6 +29,7 @@ public class PhoneBook {
 
     private static final Scanner INPUT = new Scanner(System.in);
     private Set<Contact> contacts;
+    private Set<Contact> blackList;
     private Contact searchForContact;
 
     public PhoneBook(Set<Contact> contacts) {
@@ -284,6 +285,10 @@ public class PhoneBook {
                     break;
                 }
             case 3: // Add to Black List
+
+
+
+
                 //TODO
                  /*
                  creating a set that store the contact.
