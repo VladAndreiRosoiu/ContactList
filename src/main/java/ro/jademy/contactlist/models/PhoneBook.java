@@ -208,8 +208,7 @@ public class PhoneBook {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void editContact(byte input) {
-        displayEditMenu();
+    private void editContact() {
         byte option = INPUT.nextByte();
         switch (option) {
             case 1: // edit first name
@@ -280,8 +279,7 @@ public class PhoneBook {
         switch (option) {
             case 1: // Edit Contact
                 displayEditMenu();
-                byte input = INPUT.nextByte();
-                editContact(input);
+                editContact();
                 break;
             case 2: // Remove Contact
                 if (contacts.contains(searchForContact)) {
