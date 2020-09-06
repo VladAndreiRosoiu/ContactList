@@ -189,7 +189,7 @@ public class PhoneBook {
         System.out.println("First name:");
         String firstName = INPUT.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream()
-                .filter(contact -> contact.getFirstName().toLowerCase().equalsIgnoreCase(firstName)).findAny();
+                .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
         getSearchedContact(contactOptional);
     }
 
@@ -197,7 +197,7 @@ public class PhoneBook {
         System.out.println("Last name:");
         String lastName = INPUT.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream()
-                .filter(contact -> contact.getLastName().toLowerCase().equalsIgnoreCase(lastName)).findAny();
+                .filter(contact -> contact.getLastName().equalsIgnoreCase(lastName)).findAny();
         getSearchedContact(contactOptional);
     }
 
@@ -329,7 +329,7 @@ public class PhoneBook {
         System.out.println("Enter the first letter of the first name:");
         String letter = INPUT.next();
         Set<Contact> contactSubSet = contacts.stream()
-                .filter(contact -> contact.getFirstName().substring(0, 1).toLowerCase().equalsIgnoreCase(letter))
+                .filter(contact -> contact.getFirstName().substring(0, 1).equalsIgnoreCase(letter))
                 .collect(Collectors.toCollection(TreeSet::new));
         contactSubSet.forEach(System.out::println);
         return contactSubSet;
