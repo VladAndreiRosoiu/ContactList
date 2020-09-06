@@ -1,8 +1,11 @@
 package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
-import ro.jademy.contactlist.data.DataProvider;
-import java.util.*;
+
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class PhoneBook {
@@ -76,7 +79,7 @@ public class PhoneBook {
 
     private void displayAllContacts() {
         System.out.println();
-        getContactHeader();
+        getHeader();
         for (Contact contact : contacts) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
@@ -329,9 +332,9 @@ public class PhoneBook {
         if (blackList.isEmpty()) {
             System.out.println("Black List is empty!");
         } else {
-           getContactHeader();
+            getHeader();
             blackList.forEach(System.out::println);
-            System.out.println("First Name:");
+            System.out.println("Enter first name of the contact you want to remove:");
             String firstName = INPUT.next();
             Optional<Contact> optionalContact = blackList.stream()
                     .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
@@ -342,9 +345,11 @@ public class PhoneBook {
             }
         }
     }
-    private void getContactHeader() {
+
+    private void getHeader() {
         System.out.println(StringUtils.center("  FIRST NAME", 15, " ") +
                 StringUtils.center("  LAST NAME", 16, " ") +
                 StringUtils.center(" PHONE NUMBER", 16, " "));
     }
+
 }

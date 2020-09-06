@@ -10,9 +10,9 @@ public class PhoneNumber {
         this.countryCode = "+44";
     }
 
-    public PhoneNumber(String phoneNumber, String countryCode) {
-        this.phoneNumber = phoneNumber;
+    public PhoneNumber(String countryCode, String phoneNumber) {
         this.countryCode = countryCode;
+        this.phoneNumber = phoneNumber;
     }
 
     public String getPhoneNumber() {
