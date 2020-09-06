@@ -2,17 +2,14 @@ package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhoneBook {
 
     private static final Scanner INPUT = new Scanner(System.in);
     private final Set<Contact> blackList = new TreeSet<>();
-    private final Set<Contact> contacts;
+    private Set<Contact> contacts;
     private Contact searchForContact;
 
     public PhoneBook(Set<Contact> contacts) {
@@ -40,7 +37,7 @@ public class PhoneBook {
                     option = INPUT.nextByte();
                     searchContact(option);
                     displaySearchForContactInfo();
-                    displayEditMenu();
+                    displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
                     contactMenu(option);
