@@ -49,7 +49,7 @@ public class PhoneBook {
                     displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
-                    editContact(option);
+                    contactMenu(option);
                     break;
                 case 3: // Search a contact
                     displaySearchMenu();
@@ -250,7 +250,8 @@ public class PhoneBook {
                 System.out.println("Updated to: " + searchForContact.getPhoneNumber().getPhoneNumber());
                 break;
             case 6: // edit group
-                System.out.println("You have selected: " + searchForContact.getGroup());
+                System.out.println("You have removed the contact from Favorites. Current group is: "
+                        + searchForContact.getGroup());
                 //TODO
                 break;
             case 7: // edit address
