@@ -25,6 +25,7 @@ public class PhoneBook {
     // 5. Exit App
 
     private static final Scanner INPUT = new Scanner(System.in);
+    private Set<Contact> blackList = new TreeSet<>();
     private Set<Contact> contacts;
     private Contact searchForContact;
 
@@ -45,7 +46,8 @@ public class PhoneBook {
                     displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
-                    contactMenu(option);
+                    displayEditMenu();
+                    editContact();
                     break;
                 case 3: // Search a contact
                     displaySearchMenu();
@@ -209,7 +211,8 @@ public class PhoneBook {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void editContact(byte option) {
+    private void editContact() {
+        byte option = INPUT.nextByte();
         switch (option) {
             case 1: // edit first name
                 System.out.println("You have selected: " + searchForContact.getFirstName());
@@ -249,7 +252,17 @@ public class PhoneBook {
             case 6: // edit group
                 System.out.println("You have removed the contact from Favorites. Current group is: "
                         + searchForContact.getGroup());
-                //TODO
+                System.out.println("New Group:");
+                String groupName = INPUT.nextLine();
+                if (groupName.equals(Group.FAMILY.getGroupName())) {
+                    searchForContact.setGroup(Group.FAMILY);
+                } else if (groupName.equals(Group.FRIENDS.getGroupName())) {
+                    searchForContact.setGroup(Group.FRIENDS);
+                } else if (groupName.equals(Group.WORK.getGroupName())) {
+                    searchForContact.setGroup(Group.WORK);
+                } else {
+                    System.out.println("This group doesn't exist!");
+                }
                 break;
             case 7: // edit address
                 System.out.println("You have selected: " + searchForContact.getAddress().getCity());
@@ -271,7 +284,7 @@ public class PhoneBook {
             case 1: // Edit Contact
                 displayEditMenu();
                 byte input = INPUT.nextByte();
-                editContact(input);
+                editContact();
                 break;
             case 2: // Remove Contact
                 if (contacts.contains(searchForContact)) {
@@ -284,19 +297,11 @@ public class PhoneBook {
                 contacts.remove(searchForContact);
                 System.out.println("Black List Contacts:");
                 addContactsToBlackList();
-
-
-
-                //TODO
-                 /*
-                 creating a set that store the contact.
-                 If the Black list is empty, display the current contact added
-                 If not, display all contacts existing in the entire Black List
-                 */
                 break;
             case 4: // Remove from Black List
-                //TODO
-                // deleting a contact from set
+                blackList.remove(searchForContact);
+                System.out.println(searchForContact.getFirstName() + "removed from Black List!");
+                contacts.add(searchForContact);
                 break;
             case 5: // Add to Favorites
                 searchForContact.setGroup(Group.FAVORITE);
@@ -339,14 +344,16 @@ public class PhoneBook {
         return contactSubSet;
     }
 
-    private Set<Contact> addContactsToBlackList() {
+    private void addContactsToBlackList() {
         System.out.println();
         System.out.println("    FIRST NAME     LAST NAME     PHONE NUMBER");
-        Set<Contact> blackList = new TreeSet<>();
         blackList.add(searchForContact);
-        for (Contact contact : blackList) {
-            System.out.println(contact);
+        if (blackList.isEmpty()) {
+            System.out.println("Black List is empty");
+        } else {
+            for (Contact contact : blackList) {
+                System.out.println(contact);
+            }
         }
-        return blackList;
     }
 }
