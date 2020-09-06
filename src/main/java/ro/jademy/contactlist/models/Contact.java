@@ -3,7 +3,6 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
-import java.util.Objects;
 
 public class Contact implements Comparable<Contact> {
 
@@ -18,7 +17,9 @@ public class Contact implements Comparable<Contact> {
     private Address address;
     private Date birthDate;
 
-    public Contact(){}
+    public Contact() {
+
+    }
 
     public Contact(int id, String firstName, String lastName, String email, Company company,
                    PhoneNumber phoneNumber, Group group, Address address, Date birthDate) {
@@ -34,15 +35,7 @@ public class Contact implements Comparable<Contact> {
     }
 
     public Contact(String firstName, String lastName, PhoneNumber phoneNumber) {
-        this.id = 0;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = null;
-        this.company = null;
-        this.phoneNumber = phoneNumber;
-        this.group = null;
-        this.address = null;
-        this.birthDate = null;
+        this(0, firstName, lastName, null, null, phoneNumber, null, null, null);
     }
 
     public int getId() {
@@ -127,7 +120,7 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return StringUtils.substring(firstName, 0, 1) +
+        return  StringUtils.substring(firstName, 0, 1) +
                 StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
@@ -137,27 +130,6 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public int compareTo(Contact otherContact) {
-        return this.firstName.compareTo(otherContact.firstName);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Contact contact = (Contact) o;
-        return id == contact.id &&
-                Objects.equals(firstName, contact.firstName) &&
-                Objects.equals(lastName, contact.lastName) &&
-                Objects.equals(email, contact.email) &&
-                Objects.equals(company, contact.company) &&
-                Objects.equals(phoneNumber, contact.phoneNumber) &&
-                group == contact.group &&
-                Objects.equals(address, contact.address) &&
-                Objects.equals(birthDate, contact.birthDate);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, firstName, lastName, email, company, phoneNumber, group, address, birthDate);
+       return this.firstName.compareTo(otherContact.firstName);
     }
 }

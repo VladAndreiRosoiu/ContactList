@@ -11,7 +11,6 @@ public class DataProvider {
 
     private static Faker faker = new Faker(new Locale("en-GB"));
 
-
     public static Set<Contact> contacts() {
         Set<Contact> contactSet = new TreeSet<>();
         for (int i = 0; i < 100; i++) {

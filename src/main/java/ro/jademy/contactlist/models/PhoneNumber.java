@@ -1,22 +1,18 @@
 package ro.jademy.contactlist.models;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Objects;
-
 public class PhoneNumber {
 
     private String phoneNumber;     // 747123456
-    private String countryCode;     // +40 - RO
+    private String countryCode;     // +40 - RO ; +44 - GB
 
     public PhoneNumber(String phoneNumber) {  // constructor with default countryCode
+        this.phoneNumber = phoneNumber;       // for GB contacts
         this.countryCode = "+44";
-        this.phoneNumber = phoneNumber;       // for Romanian contacts
     }
 
-    public PhoneNumber(String countryCode, String phoneNumber) {
-        this.countryCode = countryCode;
+    public PhoneNumber(String phoneNumber, String countryCode) {
         this.phoneNumber = phoneNumber;
+        this.countryCode = countryCode;
     }
 
     public String getPhoneNumber() {
@@ -34,6 +30,4 @@ public class PhoneNumber {
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
     }
-
-
 }
