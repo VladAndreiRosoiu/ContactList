@@ -2,10 +2,7 @@ package ro.jademy.contactlist.models;
 
 import ro.jademy.contactlist.data.DataProvider;
 
-import java.util.Optional;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhoneBook {
@@ -29,7 +26,6 @@ public class PhoneBook {
 
     private static final Scanner INPUT = new Scanner(System.in);
     private Set<Contact> contacts;
-    private Set<Contact> blackList;
     private Contact searchForContact;
 
     public PhoneBook(Set<Contact> contacts) {
@@ -46,7 +42,6 @@ public class PhoneBook {
                     break;
                 case 2: // Select a contact
                     searchForContactByFirstName(getContactsByFirstLetter());
-                    displaySearchForContactInfo();
                     displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
@@ -181,6 +176,7 @@ public class PhoneBook {
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
             System.out.println("Contact found!");
+            displaySearchForContactInfo();
         } else {
             System.out.println("Contact not found!");
         }
@@ -285,7 +281,9 @@ public class PhoneBook {
                     break;
                 }
             case 3: // Add to Black List
-
+                contacts.remove(searchForContact);
+                System.out.println("Black List Contacts:");
+                addContactsToBlackList();
 
 
 
@@ -339,5 +337,16 @@ public class PhoneBook {
                 .collect(Collectors.toCollection(TreeSet::new));
         contactSubSet.forEach(System.out::println);
         return contactSubSet;
+    }
+
+    private Set<Contact> addContactsToBlackList() {
+        System.out.println();
+        System.out.println("    FIRST NAME     LAST NAME     PHONE NUMBER");
+        Set<Contact> blackList = new TreeSet<>();
+        blackList.add(searchForContact);
+        for (Contact contact : blackList) {
+            System.out.println(contact);
+        }
+        return blackList;
     }
 }
