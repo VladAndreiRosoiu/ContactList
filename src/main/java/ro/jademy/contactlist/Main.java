@@ -9,6 +9,7 @@ public class Main {
 
         PhoneBook phoneBook = new PhoneBook(DataProvider.contacts());
         phoneBook.initiatePhoneBook();
+
         }
     }
 

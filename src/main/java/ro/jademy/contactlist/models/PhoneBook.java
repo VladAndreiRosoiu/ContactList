@@ -1,32 +1,15 @@
 package ro.jademy.contactlist.models;
 
+import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.data.DataProvider;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhoneBook {
-    //TODO
-    // Phone Book MAIN MENU
-    // 1. Display contacts (firstName, lastName, phoneNumber)
-    // 2. Select contact (By index (A-Z) -> create a subset of first letter of the contact, and after that by firstName)
-            // Contact Menu
-            // 1. Edit contact         -----> sub menu To edit all attributes (Return to Contact Menu)
-            // 2. Remove contact
-            // 3. Add to black list
-            // 4. Add to Favorites
-            // 5. Return to Phone Book
-    // 3. Search by
-         // 1. firstName
-         // 2. lastName
-         // 3. phoneNumber
-         // 4. Return to Phone Book
-    // 4. Add new Contact
-    // 5. Exit App
 
     private static final Scanner INPUT = new Scanner(System.in);
-    private Set<Contact> blackList = new TreeSet<>();
-    private Set<Contact> contacts;
+    private final Set<Contact> blackList = new TreeSet<>();
+    private final Set<Contact> contacts;
     private Contact searchForContact;
 
     public PhoneBook(Set<Contact> contacts) {
@@ -46,8 +29,7 @@ public class PhoneBook {
                     displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
-                    displayEditMenu();
-                    editContact();
+                    contactMenu(option);
                     break;
                 case 3: // Search a contact
                     displaySearchMenu();
@@ -63,10 +45,13 @@ public class PhoneBook {
                 case 4: // Add new contact
                     addNewContact();
                     break;
-                case 5: // Exit app
+                case 5: // Show Black List
+                    removeFromBlackList();
+                    break;
+                case 6: // Exit app
                     System.exit(0);
                 default: // For invalid inputs
-                    System.out.println("Invalid input. Please, choose between [1-5] only!");
+                    System.out.println("Invalid input. Please, choose between [1-6] only!");
             }
         } while (true);
     }
@@ -74,6 +59,7 @@ public class PhoneBook {
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All menu's printing methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void displayMainMenu() {
+        System.out.println();
         System.out.println("+---------------------------------------------+");
         System.out.println("|                 PHONE BOOK                  |");
         System.out.println("+---------------------------------------------+");
@@ -83,13 +69,14 @@ public class PhoneBook {
         System.out.println("         |    2. Select Contact      |         ");
         System.out.println("         |    3. Search Contact      |         ");
         System.out.println("         |    4. Add new Contact     |         ");
-        System.out.println("         |    5. Exit Phone Book     |         ");
+        System.out.println("         |    5. Show Black List     |         ");
+        System.out.println("         |    6. Exit Phone Book     |         ");
         System.out.println("         +---------------------------+         ");
     }
 
     private void displayAllContacts() {
         System.out.println();
-        System.out.println("  FIRST NAME      LAST NAME      PHONE NUMBER");
+        getContactHeader();
         for (Contact contact : DataProvider.contacts()) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
@@ -116,10 +103,9 @@ public class PhoneBook {
         System.out.println("        |  1. Edit Contact            |        ");
         System.out.println("        |  2. Remove Contact          |        ");
         System.out.println("        |  3. Add to Black List       |        ");
-        System.out.println("        |  4. Remove from Black List  |        ");
-        System.out.println("        |  5. Add to Favorites        |        ");
-        System.out.println("        |  6. Remove from Favorites   |        ");
-        System.out.println("        |  7. Return to Main Menu     |        ");
+        System.out.println("        |  4. Add to Favorites        |        ");
+        System.out.println("        |  5. Remove from Favorites   |        ");
+        System.out.println("        |  6. Return to Main Menu     |        ");
         System.out.println("        +-----------------------------+        ");
     }
 
@@ -211,7 +197,8 @@ public class PhoneBook {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void editContact() {
+    private void editContact(byte input) {
+        displayEditMenu();
         byte option = INPUT.nextByte();
         switch (option) {
             case 1: // edit first name
@@ -250,15 +237,14 @@ public class PhoneBook {
                 System.out.println("Updated to: " + searchForContact.getPhoneNumber().getPhoneNumber());
                 break;
             case 6: // edit group
-                System.out.println("You have removed the contact from Favorites. Current group is: "
-                        + searchForContact.getGroup());
+                System.out.println("Current group is: " + searchForContact.getGroup());
                 System.out.println("New Group:");
-                String groupName = INPUT.nextLine();
-                if (groupName.equals(Group.FAMILY.getGroupName())) {
+                String groupName = INPUT.next();
+                if (groupName.equalsIgnoreCase(Group.FAMILY.getGroupName())) {
                     searchForContact.setGroup(Group.FAMILY);
-                } else if (groupName.equals(Group.FRIENDS.getGroupName())) {
+                } else if (groupName.equalsIgnoreCase(Group.FRIENDS.getGroupName())) {
                     searchForContact.setGroup(Group.FRIENDS);
-                } else if (groupName.equals(Group.WORK.getGroupName())) {
+                } else if (groupName.equalsIgnoreCase(Group.WORK.getGroupName())) {
                     searchForContact.setGroup(Group.WORK);
                 } else {
                     System.out.println("This group doesn't exist!");
@@ -284,37 +270,32 @@ public class PhoneBook {
             case 1: // Edit Contact
                 displayEditMenu();
                 byte input = INPUT.nextByte();
-                editContact();
+                editContact(input);
                 break;
             case 2: // Remove Contact
                 if (contacts.contains(searchForContact)) {
                     contacts.remove(searchForContact);
                     System.out.println("Contact deleted!");
                     searchForContact = null;
-                    break;
                 }
+                break;
             case 3: // Add to Black List
                 contacts.remove(searchForContact);
-                System.out.println("Black List Contacts:");
-                addContactsToBlackList();
+                blackList.add(searchForContact);
+                searchForContact = null;
                 break;
-            case 4: // Remove from Black List
-                blackList.remove(searchForContact);
-                System.out.println(searchForContact.getFirstName() + "removed from Black List!");
-                contacts.add(searchForContact);
-                break;
-            case 5: // Add to Favorites
+            case 4: // Add to Favorites
                 searchForContact.setGroup(Group.FAVORITE);
                 System.out.println("Contact added to Favorites!");
                 break;
-            case 6: // Removed from Favorites
+            case 5: // Removed from Favorites
                 searchForContact.setGroup(Group.MY_CONTACTS);
                 System.out.println("Contact removed from Favorites!");
                 break;
-            case 7: // Return to Main Menu
+            case 6: // Return to Main Menu
                 break;
             default: // For invalid inputs
-                System.out.println("Invalid input. Please, choose between [1-7] only!");
+                System.out.println("Invalid input. Please, choose between [1-6] only!");
         }
     }
 
@@ -344,16 +325,26 @@ public class PhoneBook {
         return contactSubSet;
     }
 
-    private void addContactsToBlackList() {
-        System.out.println();
-        System.out.println("    FIRST NAME     LAST NAME     PHONE NUMBER");
-        blackList.add(searchForContact);
+    private void removeFromBlackList() {
         if (blackList.isEmpty()) {
-            System.out.println("Black List is empty");
+            System.out.println("Black List is empty!");
         } else {
-            for (Contact contact : blackList) {
-                System.out.println(contact);
+           getContactHeader();
+            blackList.forEach(System.out::println);
+            System.out.println("First Name:");
+            String firstName = INPUT.next();
+            Optional<Contact> optionalContact = blackList.stream()
+                    .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
+            if (optionalContact.isPresent()) {
+                System.out.println("Removed " + optionalContact.get().getFirstName() + " from Black List");
+                blackList.remove(optionalContact.get());
+                contacts.add(optionalContact.get());
             }
         }
+    }
+    private void getContactHeader() {
+        System.out.println(StringUtils.center("  FIRST NAME", 15, " ") +
+                StringUtils.center("  LAST NAME", 16, " ") +
+                StringUtils.center(" PHONE NUMBER", 16, " "));
     }
 }
