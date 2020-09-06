@@ -7,6 +7,7 @@ public class Main {
 
     public static void main(String[] args) {
 
+
         PhoneBook phoneBook = new PhoneBook(DataProvider.contacts());
         phoneBook.initiatePhoneBook();
 

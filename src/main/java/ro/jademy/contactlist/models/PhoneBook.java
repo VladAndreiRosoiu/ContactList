@@ -77,7 +77,7 @@ public class PhoneBook {
     private void displayAllContacts() {
         System.out.println();
         getContactHeader();
-        for (Contact contact : DataProvider.contacts()) {
+        for (Contact contact : contacts) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
         }
