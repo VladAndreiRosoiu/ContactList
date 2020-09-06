@@ -163,7 +163,11 @@ public class PhoneBook {
         }
     }
 
-    private void getSearchedContact(Optional<Contact> contactOptional) {
+    private void searchForContactByFirstName(Set<Contact> tempContactSet) {
+        System.out.println("First name:");
+        String firstName = INPUT.next().toLowerCase();
+        Optional<Contact> contactOptional = tempContactSet.stream()
+                .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
             System.out.println("Contact found!");
@@ -173,20 +177,18 @@ public class PhoneBook {
         }
     }
 
-    private void searchForContactByFirstName(Set<Contact> tempContactSet) {
-        System.out.println("First name:");
-        String firstName = INPUT.next().toLowerCase();
-        Optional<Contact> contactOptional = contacts.stream()
-                .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
-        getSearchedContact(contactOptional);
-    }
-
     private void searchForContactByLastName() {
         System.out.println("Last name:");
         String lastName = INPUT.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream()
                 .filter(contact -> contact.getLastName().equalsIgnoreCase(lastName)).findAny();
-        getSearchedContact(contactOptional);
+        if (contactOptional.isPresent()) {
+            searchForContact = contactOptional.get();
+            System.out.println("Contact found!");
+            displaySearchForContactInfo();
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
 
     private void searchForContactByPhoneNumber() {
@@ -195,7 +197,13 @@ public class PhoneBook {
         String phoneNumber = INPUT.nextLine();
         Optional<Contact> contactOptional = contacts.stream()
                 .filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
-        getSearchedContact(contactOptional);
+        if (contactOptional.isPresent()) {
+            searchForContact = contactOptional.get();
+            System.out.println("Contact found!");
+            displaySearchForContactInfo();
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
