@@ -1,7 +1,7 @@
 package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
-import ro.jademy.contactlist.data.DataProvider;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,7 +9,7 @@ public class PhoneBook {
 
     private static final Scanner INPUT = new Scanner(System.in);
     private final Set<Contact> blackList = new TreeSet<>();
-    private final Set<Contact> contacts;
+    private Set<Contact> contacts;
     private Contact searchForContact;
 
     public PhoneBook(Set<Contact> contacts) {
@@ -37,7 +37,7 @@ public class PhoneBook {
                     option = INPUT.nextByte();
                     searchContact(option);
                     displaySearchForContactInfo();
-                    displayEditMenu();
+                    displayContactMenu();
                     System.out.println("Enter an option:");
                     option = INPUT.nextByte();
                     contactMenu(option);
@@ -76,8 +76,8 @@ public class PhoneBook {
 
     private void displayAllContacts() {
         System.out.println();
-        getContactHeader();
-        for (Contact contact : DataProvider.contacts()) {
+        getHeader();
+        for (Contact contact : contacts) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
         }
@@ -160,7 +160,11 @@ public class PhoneBook {
         }
     }
 
-    private void getSearchedContact(Optional<Contact> contactOptional) {
+    private void searchForContactByFirstName(Set<Contact> tempContactSet) {
+        System.out.println("First name:");
+        String firstName = INPUT.next().toLowerCase();
+        Optional<Contact> contactOptional = tempContactSet.stream()
+                .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
             System.out.println("Contact found!");
@@ -170,20 +174,18 @@ public class PhoneBook {
         }
     }
 
-    private void searchForContactByFirstName(Set<Contact> tempContactSet) {
-        System.out.println("First name:");
-        String firstName = INPUT.next().toLowerCase();
-        Optional<Contact> contactOptional = contacts.stream()
-                .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
-        getSearchedContact(contactOptional);
-    }
-
     private void searchForContactByLastName() {
         System.out.println("Last name:");
         String lastName = INPUT.next().toLowerCase();
         Optional<Contact> contactOptional = contacts.stream()
                 .filter(contact -> contact.getLastName().equalsIgnoreCase(lastName)).findAny();
-        getSearchedContact(contactOptional);
+        if (contactOptional.isPresent()) {
+            searchForContact = contactOptional.get();
+            System.out.println("Contact found!");
+            displaySearchForContactInfo();
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
 
     private void searchForContactByPhoneNumber() {
@@ -192,13 +194,18 @@ public class PhoneBook {
         String phoneNumber = INPUT.nextLine();
         Optional<Contact> contactOptional = contacts.stream()
                 .filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
-        getSearchedContact(contactOptional);
+        if (contactOptional.isPresent()) {
+            searchForContact = contactOptional.get();
+            System.out.println("Contact found!");
+            displaySearchForContactInfo();
+        } else {
+            System.out.println("Contact not found!");
+        }
     }
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void editContact(byte input) {
-        displayEditMenu();
+    private void editContact() {
         byte option = INPUT.nextByte();
         switch (option) {
             case 1: // edit first name
@@ -207,6 +214,8 @@ public class PhoneBook {
                 String anotherFirstName = INPUT.next();
                 searchForContact.setFirstName(anotherFirstName);
                 System.out.println("Updated to: " + searchForContact.getFirstName());
+                contacts.remove(searchForContact);
+                contacts.add(searchForContact);
                 break;
             case 2: // edit last name
                 System.out.println("You have selected: " + searchForContact.getLastName());
@@ -269,8 +278,7 @@ public class PhoneBook {
         switch (option) {
             case 1: // Edit Contact
                 displayEditMenu();
-                byte input = INPUT.nextByte();
-                editContact(input);
+                editContact();
                 break;
             case 2: // Remove Contact
                 if (contacts.contains(searchForContact)) {
@@ -329,9 +337,9 @@ public class PhoneBook {
         if (blackList.isEmpty()) {
             System.out.println("Black List is empty!");
         } else {
-           getContactHeader();
+            getHeader();
             blackList.forEach(System.out::println);
-            System.out.println("First Name:");
+            System.out.println("Enter first name of the contact you want to remove:");
             String firstName = INPUT.next();
             Optional<Contact> optionalContact = blackList.stream()
                     .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
@@ -342,9 +350,11 @@ public class PhoneBook {
             }
         }
     }
-    private void getContactHeader() {
+
+    private void getHeader() {
         System.out.println(StringUtils.center("  FIRST NAME", 15, " ") +
                 StringUtils.center("  LAST NAME", 16, " ") +
                 StringUtils.center(" PHONE NUMBER", 16, " "));
     }
+
 }
