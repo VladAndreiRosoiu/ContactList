@@ -1,7 +1,6 @@
 package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.Date;
 
 public class Contact implements Comparable<Contact> {
@@ -120,13 +119,12 @@ public class Contact implements Comparable<Contact> {
 
     @Override
     public String toString() {
-        return StringUtils.substring(firstName, 0, 1) +
+        return  StringUtils.substring(firstName, 0, 1) +
                 StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
                 StringUtils.center(String.valueOf(phoneNumber.getPhoneNumber()), 15, " ");
     }
-
 
     @Override
     public int compareTo(Contact otherContact) {

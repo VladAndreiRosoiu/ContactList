@@ -26,8 +26,4 @@ public class PhoneNumber {
     public String getCountryCode() {
         return countryCode;
     }
-
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
-    }
 }

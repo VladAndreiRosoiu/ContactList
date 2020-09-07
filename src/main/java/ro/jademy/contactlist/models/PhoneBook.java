@@ -1,7 +1,6 @@
 package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -356,5 +355,4 @@ public class PhoneBook {
                 StringUtils.center("  LAST NAME", 16, " ") +
                 StringUtils.center(" PHONE NUMBER", 16, " "));
     }
-
 }
