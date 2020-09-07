@@ -11,7 +11,6 @@ public class DataProvider {
 
     private static Faker faker = new Faker(new Locale("en-GB"));
 
-
     public static Set<Contact> contacts() {
         Set<Contact> contactSet = new TreeSet<>();
         for (int i = 0; i < 100; i++) {
@@ -19,7 +18,7 @@ public class DataProvider {
                     , faker.internet().emailAddress(), new Company(faker.company().name()),
                     new PhoneNumber(faker.phoneNumber().cellPhone()), Group.MY_CONTACTS,
                     new Address(faker.address().streetName(), faker.address().streetAddressNumber(),
-                            faker.address().city()), faker.date().birthday(20,50)));
+                            faker.address().city()), faker.date().birthday(20, 50)));
         }
         return contactSet;
     }
