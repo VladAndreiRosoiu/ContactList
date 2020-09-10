@@ -7,7 +7,7 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class DataProvider {
+/*public class DataProvider {
 
     private static Faker faker = new Faker(new Locale("en-GB"));
 
@@ -22,4 +22,4 @@ public class DataProvider {
         }
         return contactSet;
     }
-}
+}*/

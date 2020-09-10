@@ -15,6 +15,7 @@ public class PhoneBook {
         this.contacts = contacts;
     }
 
+
     public void initiatePhoneBook() {
         do {
             displayMainMenu();
@@ -74,6 +75,7 @@ public class PhoneBook {
     }
 
     private void displayAllContacts() {
+
         System.out.println();
         getHeader();
         for (Contact contact : contacts) {
@@ -83,14 +85,28 @@ public class PhoneBook {
     }
 
     private void displaySearchForContactInfo() {
-        System.out.println("Contact: " + searchForContact.getFirstName() + " " + searchForContact.getLastName());
+        System.out.println("\nContact: " + searchForContact.getFirstName() + " " + searchForContact.getLastName());
         System.out.println("Phone Number: " + searchForContact.getPhoneNumber().getCountryCode() + " " +
                 searchForContact.getPhoneNumber().getPhoneNumber());
-        System.out.println("Company: " + searchForContact.getCompany().getName());
+        System.out.println("Company: " + searchForContact.getCompany().getName() +
+                " | Job Title: " + searchForContact.getCompany().getJobTitle());
+        System.out.println("Company Address: " + searchForContact.getCompany().getAddress().getStreetName() +
+              " " + searchForContact.getCompany().getAddress().getStreetNo());
+        if (searchForContact.getCompany().getAddress().getFloorNo() >= 4) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "th");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 3) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "rd");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 2) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "nd");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 1) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "st");
+        } else {
+            System.out.println("Ground Floor");
+        }
         System.out.println("E-mail: " + searchForContact.getEmail());
         System.out.println("Address - City: " + searchForContact.getAddress().getCity());
+        System.out.println("Address - Country: " + searchForContact.getAddress().getCountry());
         System.out.println("Group: " + searchForContact.getGroup());
-
     }
 
     private void displayContactMenu() { // This is a subMenu to 'Select Contact' menu option from Main Menu
@@ -166,10 +182,10 @@ public class PhoneBook {
                 .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
-            System.out.println("Contact found!");
+            System.out.println("\nContact found!");
             displaySearchForContactInfo();
         } else {
-            System.out.println("Contact not found!");
+            System.out.println("\nContact not found!");
         }
     }
 

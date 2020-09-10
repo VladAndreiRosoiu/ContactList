@@ -3,7 +3,7 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 import java.util.Date;
 
-public class Contact implements Comparable<Contact> {
+public class Contact implements Comparable<Contact>{
 
     private int id;                                            // for internal operations only (not being displayed)
     //private String title;                                    // ex: Mr., Mrs., Ms., Miss, Prof., Dr., Eng.;
@@ -116,6 +116,7 @@ public class Contact implements Comparable<Contact> {
     public void setBirthDate(Date birthDate) {
         this.birthDate = birthDate;
     }
+
 
     @Override
     public String toString() {
