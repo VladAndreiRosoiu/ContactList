@@ -3,10 +3,9 @@ package ro.jademy.contactlist.services;
 import au.com.anthonybruno.Gen;
 import com.github.javafaker.Faker;
 import ro.jademy.contactlist.models.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
 import java.util.Set;
@@ -20,15 +19,15 @@ public class IOService {
 
         Faker faker = Faker.instance(new Locale("en-GB"));
         Gen.start()
-                .addField("ID", () -> faker.number().numberBetween(99,199))
+                .addField("ID", () -> faker.number().numberBetween(99, 199))
                 .addField("FIRST_NAME", () -> faker.name().firstName())
                 .addField("LAST_NAME", () -> faker.name().lastName())
                 .addField("E-MAIL", () -> faker.internet().emailAddress())
                 .addField("COMPANY", () -> new Company(faker.company().name(), faker.job().title(), new Address(
                         faker.address().streetName(),
                         faker.address().streetAddressNumber(),
-                        Integer.parseInt(faker.number().digit()),  // doorNo
-                        faker.number().numberBetween(0,8),         // floorNo
+                        Integer.parseInt(faker.number().digit()),   // doorNo
+                        faker.number().numberBetween(0, 8),         // floorNo
                         faker.address().cityName(),
                         faker.country().name())))
                 .addField("PHONE_NUMBER", () -> new PhoneNumber(
@@ -39,7 +38,7 @@ public class IOService {
                         faker.address().streetName(),
                         faker.address().streetAddressNumber(),
                         Integer.parseInt(faker.number().digit()),  // doorNo
-                        faker.number().numberBetween(0,8),         // floorNo
+                        faker.number().numberBetween(0, 8),         // floorNo
                         faker.address().cityName(),
                         faker.country().name()))
                 .addField("BIRTHDATE", () -> faker.date().birthday(20, 50)
@@ -65,9 +64,9 @@ public class IOService {
             contactSet.add(new Contact(Integer.parseInt(strings[0]), strings[1], strings[2], strings[3],
                     new Company(company[0], company[1], new Address(company[2], company[3], Integer.parseInt(company[4]),
                             Integer.parseInt(company[5]), company[6], company[7])),
-                    new PhoneNumber(phoneNo[0], phoneNo[1]), Group.valueOf(strings[6]),
+                    new PhoneNumber(phoneNo[0], phoneNo[1]), Group.lookup(strings[6], Group.MY_CONTACTS),
                     new Address(address[0], address[1], Integer.parseInt(address[2]), Integer.parseInt(address[3]),
-                            address[4], address[5]), Date.valueOf(strings[8])));
+                            address[4], address[5]), LocalDate.now()));
         }
         return contactSet;
     }
