@@ -27,7 +27,8 @@ public class PhoneNumber {
         return countryCode;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    @Override
+    public String toString() {
+        return  countryCode + "/" + phoneNumber;
     }
 }
