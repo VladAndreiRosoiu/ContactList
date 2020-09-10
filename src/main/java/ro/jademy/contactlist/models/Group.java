@@ -16,4 +16,12 @@ public enum Group {
     public String getGroupName() {
         return groupName;
     }
+
+    static public Group lookup(String string, Group defaultValue) {
+        try {
+            return Group.valueOf(string);
+        } catch (IllegalArgumentException ex) {
+            return defaultValue;
+        }
+    }
 }

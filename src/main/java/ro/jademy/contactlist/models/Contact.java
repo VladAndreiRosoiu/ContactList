@@ -1,13 +1,11 @@
 package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
+import java.time.LocalDate;
 
-import java.util.Date;
+public class Contact implements Comparable<Contact>{
 
-public class Contact implements Comparable<Contact> {
-
-    private int id;                                            // for internal operations only (not being displayed)
-    //private String title;                                    // ex: Mr., Mrs., Ms., Miss, Prof., Dr., Eng.;
+    private int id;                    // for internal operations only (not being displayed)
     private String firstName;
     private String lastName;
     private String email;
@@ -15,14 +13,10 @@ public class Contact implements Comparable<Contact> {
     private PhoneNumber phoneNumber;
     private Group group;
     private Address address;
-    private Date birthDate;
-
-    public Contact() {
-
-    }
+    private LocalDate birthDate;
 
     public Contact(int id, String firstName, String lastName, String email, Company company,
-                   PhoneNumber phoneNumber, Group group, Address address, Date birthDate) {
+                   PhoneNumber phoneNumber, Group group, Address address, LocalDate birthDate) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -34,8 +28,11 @@ public class Contact implements Comparable<Contact> {
         this.birthDate = birthDate;
     }
 
-    public Contact(String firstName, String lastName, PhoneNumber phoneNumber) {
-        this(0, firstName, lastName, null, null, phoneNumber, null, null, null);
+    public Contact(int id, String firstName, String lastName, PhoneNumber phoneNumber) {
+        this(id, firstName, lastName, " ", new Company(" ", " ",
+                new Address(" ", " ", 0, 0, " ", " ")), phoneNumber,
+                Group.MY_CONTACTS, new Address(" ", " ", 0, 0, " ", " "),
+                LocalDate.now());
     }
 
     public int getId() {
@@ -45,14 +42,6 @@ public class Contact implements Comparable<Contact> {
     public void setId(int id) {
         this.id = id;
     }
-
-  /*  public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }*/
 
     public String getFirstName() {
         return firstName;
@@ -110,23 +99,23 @@ public class Contact implements Comparable<Contact> {
         this.address = address;
     }
 
-    public Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
+
     @Override
     public String toString() {
-        return StringUtils.substring(firstName, 0, 1) +
+        return  StringUtils.substring(firstName, 0, 1) +
                 StringUtils.center(firstName, 15, " ") +
                 StringUtils.center(lastName, 15, " ") +
                 StringUtils.center(phoneNumber.getCountryCode(), 1, " ") +
                 StringUtils.center(String.valueOf(phoneNumber.getPhoneNumber()), 15, " ");
     }
-
 
     @Override
     public int compareTo(Contact otherContact) {

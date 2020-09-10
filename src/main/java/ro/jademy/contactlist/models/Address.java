@@ -9,19 +9,6 @@ public class Address {
     private String city;
     private String country;
 
-    public Address(String streetName, String streetNo, String city) {
-        this.streetName = streetName;
-        this.streetNo = streetNo;
-        this.city = city;
-    }
-
-    public Address(String streetName, String streetNo, String city, String country) {
-        this.streetName = streetName;
-        this.streetNo = streetNo;
-        this.city = city;
-        this.country = country;
-    }
-
     public Address(String streetName, String streetNo, int doorNo, int floorNo, String city, String country) {
         this.streetName = streetName;
         this.streetNo = streetNo;
@@ -77,5 +64,10 @@ public class Address {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Override
+    public String toString() {
+        return  streetName + "/" + streetNo + "/" + doorNo + "/" + floorNo + "/" + city + "/" +  country;
     }
 }
