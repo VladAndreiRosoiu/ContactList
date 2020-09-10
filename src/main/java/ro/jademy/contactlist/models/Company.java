@@ -44,4 +44,9 @@ public class Company {
     public void setAddress(Address address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return  name + "/" + jobTitle + "/" + address;
+    }
 }
