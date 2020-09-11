@@ -33,7 +33,6 @@ public class PhoneBook {
                         break;
                     case 2: // Select a contact
                         searchForContactByFirstName(getContactsByFirstLetter());
-                        displayContactMenu();
                         contactMenu();
                         break;
                     case 3: // Search a contact
@@ -314,6 +313,8 @@ public class PhoneBook {
                     break;
                 default: // For invalid inputs
                     System.out.println("Invalid input. Please, choose between [1-9] only!");
+                    displayEditMenu();
+                    editContact();
             }
         } catch (InputMismatchException inputMismatchException) {
             System.out.println("Invalid input. Please, choose between [1-9] only!");
@@ -325,9 +326,9 @@ public class PhoneBook {
 
     private void contactMenu() {
         try {
+            displayContactMenu();
             System.out.println("Enter an option:");
             byte option = INPUT.nextByte();
-            displayContactMenu();
             switch (option) {
                 case 1: // Edit Contact
                     displayEditMenu();
@@ -363,7 +364,6 @@ public class PhoneBook {
         }catch (InputMismatchException exception){
             System.out.println("Invalid input. Please, choose between [1-6] only!");
             INPUT=new Scanner(System.in);
-            displayContactMenu();
             contactMenu();
         }
     }
