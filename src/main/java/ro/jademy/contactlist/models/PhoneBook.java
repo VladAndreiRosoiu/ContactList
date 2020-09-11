@@ -2,6 +2,7 @@ package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -32,21 +33,13 @@ public class PhoneBook {
                         break;
                     case 2: // Select a contact
                         searchForContactByFirstName(getContactsByFirstLetter());
-                        displayContactMenu();
-                        System.out.println("Enter an option:");
-                        option = INPUT.nextByte();
-                        contactMenu(option);
+                        contactMenu();
                         break;
                     case 3: // Search a contact
                         displaySearchMenu();
-                        System.out.println("Enter an option:");
-                        option = INPUT.nextByte();
-                        searchContact(option);
-                        displaySearchForContactInfo();
+                        searchContact();
                         displayContactMenu();
-                        System.out.println("Enter an option:");
-                        option = INPUT.nextByte();
-                        contactMenu(option);
+                        contactMenu();
                         break;
                     case 4: // Add new contact
                         addNewContact();
@@ -172,21 +165,33 @@ public class PhoneBook {
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ All searching methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
-    private void searchContact(byte option) {
-        switch (option) {
-            case 1: // Search by first name
-                searchForContactByFirstName(contacts);
-                break;
-            case 2: // Search by last name
-                searchForContactByLastName();
-                break;
-            case 3: // Search by phone number
-                searchForContactByPhoneNumber();
-                break;
-            case 4: // Return to Main Menu
-                break;
-            default: // For invalid inputs
-                System.out.println("Invalid input. Please, choose between [1-4] only!");
+    private void searchContact() {
+        try {
+            System.out.println("Enter an option:");
+            byte option = INPUT.nextByte();
+            switch (option) {
+                case 1: // Search by first name
+                    searchForContactByFirstName(contacts);
+                    break;
+                case 2: // Search by last name
+                    searchForContactByLastName();
+                    break;
+                case 3: // Search by phone number
+                    searchForContactByPhoneNumber();
+                    break;
+                case 4: // Return to Main Menu
+                    initiatePhoneBook();
+                    break;
+                default: // For invalid inputs
+                    System.out.println("Invalid input. Please, choose between [1-4] only!");
+                    displaySearchMenu();
+                    searchContact();
+            }
+        }catch (InputMismatchException inputMismatchException){
+            System.out.println("Invalid input. Please, choose between [1-4] only!");
+            INPUT=new Scanner(System.in);
+            displaySearchMenu();
+            searchContact();
         }
     }
 
@@ -308,46 +313,58 @@ public class PhoneBook {
                     break;
                 default: // For invalid inputs
                     System.out.println("Invalid input. Please, choose between [1-9] only!");
+                    displayEditMenu();
+                    editContact();
             }
-        } catch (ValidateInput validateInput) {
-            System.out.println(validateInput.getMessage());
+        } catch (InputMismatchException inputMismatchException) {
+            System.out.println("Invalid input. Please, choose between [1-9] only!");
+            INPUT=new Scanner(System.in);
             displayEditMenu();
             editContact();
         }
     }
 
-    private void contactMenu(byte option) {
-
-        displayContactMenu();
-        switch (option) {
-            case 1: // Edit Contact
-                displayEditMenu();
-                editContact();
-                break;
-            case 2: // Remove Contact
-                if (contacts.contains(searchForContact)) {
+    private void contactMenu() {
+        try {
+            displayContactMenu();
+            System.out.println("Enter an option:");
+            byte option = INPUT.nextByte();
+            switch (option) {
+                case 1: // Edit Contact
+                    displayEditMenu();
+                    editContact();
+                    break;
+                case 2: // Remove Contact
+                    if (contacts.contains(searchForContact)) {
+                        contacts.remove(searchForContact);
+                        System.out.println("Contact deleted!");
+                        searchForContact = null;
+                    }
+                    break;
+                case 3: // Add to Black List
                     contacts.remove(searchForContact);
-                    System.out.println("Contact deleted!");
+                    blackList.add(searchForContact);
                     searchForContact = null;
-                }
-                break;
-            case 3: // Add to Black List
-                contacts.remove(searchForContact);
-                blackList.add(searchForContact);
-                searchForContact = null;
-                break;
-            case 4: // Add to Favorites
-                searchForContact.setGroup(Group.FAVORITE);
-                System.out.println("Contact added to Favorites!");
-                break;
-            case 5: // Removed from Favorites
-                searchForContact.setGroup(Group.MY_CONTACTS);
-                System.out.println("Contact removed from Favorites!");
-                break;
-            case 6: // Return to Main Menu
-                break;
-            default: // For invalid inputs
-                System.out.println("Invalid input. Please, choose between [1-6] only!");
+                    break;
+                case 4: // Add to Favorites
+                    searchForContact.setGroup(Group.FAVORITE);
+                    System.out.println("Contact added to Favorites!");
+                    break;
+                case 5: // Removed from Favorites
+                    searchForContact.setGroup(Group.MY_CONTACTS);
+                    System.out.println("Contact removed from Favorites!");
+                    break;
+                case 6: // Return to Main Menu
+                    initiatePhoneBook();
+                    break;
+                default: // For invalid inputs
+                    System.out.println("Invalid input. Please, choose between [1-6] only!");
+                    contactMenu();
+            }
+        }catch (InputMismatchException exception){
+            System.out.println("Invalid input. Please, choose between [1-6] only!");
+            INPUT=new Scanner(System.in);
+            contactMenu();
         }
     }
 
@@ -444,7 +461,7 @@ public class PhoneBook {
         System.out.println("Phone number entered correctly!");
     }
 
-    private String fileHeader(){
+    private String fileHeader() {
         return "ID,FIRST_NAME,LAST_NAME,EMAIL," +
                 "COMPANY_NAME/JOB_TITLE/COMP_ADDRESS_STREET/COM_ADDRESS_NO/" +
                 "COM_ADDRESS_DOORNO/COMP_ADDRESS_FLOORNO/COMP_ADDRESS_CITY/" +
@@ -453,7 +470,7 @@ public class PhoneBook {
 
     }
 
-    public void writeFile() throws IOException {
+    private void writeFile() throws IOException {
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
         writer.write(fileHeader());
@@ -477,4 +494,5 @@ public class PhoneBook {
             writer.flush();
         }
     }
+
 }
