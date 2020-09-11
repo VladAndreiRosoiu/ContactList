@@ -1,12 +1,11 @@
 package ro.jademy.contactlist.models;
 
-
-import java.io.*;
-import java.util.*;
-import java.time.LocalDate;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
+import java.io.*;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class PhoneBook {
 
@@ -48,6 +47,8 @@ public class PhoneBook {
                         removeFromBlackList();
                         break;
                     case 6: // Exit app
+                        deleteBlackListFile();
+
                         try {
                             writeFile(contacts, fileName);
                         } catch (IOException e) {
@@ -340,34 +341,34 @@ public class PhoneBook {
                         contacts.remove(searchForContact);
                         System.out.println("Contact deleted!");
                         searchForContact = null;
-                }
-                break;
-            case 3: // Add to Black List
-                if (blackList.isEmpty() && !blackListFile.exists()) {
-                    createBlackListFile();
-                }
-                contacts.remove(searchForContact);
-                blackList.add(searchForContact);
-                System.out.println(searchForContact.getFirstName() + " was added to black list");
-                try {
-                    writeFile(blackList, String.valueOf(blackListFile));
-                } catch (IOException e) {
-                    System.out.println("Could not write file!");
-                }
-                searchForContact = null;
-                break;
-            case 4: // Add to Favorites
-                searchForContact.setGroup(Group.FAVORITE);
-                System.out.println("Contact added to Favorites!");
-                break;
-            case 5: // Removed from Favorites
-                searchForContact.setGroup(Group.MY_CONTACTS);
-                System.out.println("Contact removed from Favorites!");
-                break;
-            case 6: // Return to Main Menu
+                    }
+                    break;
+                case 3: // Add to Black List
+                    if (blackList.isEmpty() && !blackListFile.exists()) {
+                        createBlackListFile();
+                    }
+                    contacts.remove(searchForContact);
+                    blackList.add(searchForContact);
+                    System.out.println(searchForContact.getFirstName() + " was added to black list");
+                    try {
+                        writeFile(blackList, String.valueOf(blackListFile));
+                    } catch (IOException e) {
+                        System.out.println("Could not write file!");
+                    }
+                    searchForContact = null;
+                    break;
+                case 4: // Add to Favorites
+                    searchForContact.setGroup(Group.FAVORITE);
+                    System.out.println("Contact added to Favorites!");
+                    break;
+                case 5: // Removed from Favorites
+                    searchForContact.setGroup(Group.MY_CONTACTS);
+                    System.out.println("Contact removed from Favorites!");
+                    break;
+                case 6: // Return to Main Menu
                     initiatePhoneBook();
                     break;
-            default: // For invalid inputs
+                default: // For invalid inputs
                     System.out.println("Invalid input. Please, choose between [1-6] only!");
                     contactMenu();
             }
@@ -377,6 +378,7 @@ public class PhoneBook {
             contactMenu();
         }
     }
+
 
     private void addNewContact() {
         try {
@@ -421,8 +423,8 @@ public class PhoneBook {
     }
 
     private void deleteBlackListFile() {
-        if (blackListFile.exists() && blackListFile.length() == 0) {
-            blackListFile.deleteOnExit();
+        if (blackList.isEmpty() && blackListFile.exists()) {
+            blackListFile.delete();
         }
     }
 
@@ -506,7 +508,7 @@ public class PhoneBook {
     }
 
     public void writeFile(Set<Contact> setList, String fileName) throws IOException {
-      
+
         BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
         writer.write(fileHeader());
         writer.newLine();
@@ -528,6 +530,7 @@ public class PhoneBook {
             writer.newLine();
             writer.flush();
         }
+        //writer.close();
     }
 
     public void readFile(Set<Contact> setList, String fileName) throws IOException {
@@ -551,4 +554,3 @@ public class PhoneBook {
         }
     }
 }
-
