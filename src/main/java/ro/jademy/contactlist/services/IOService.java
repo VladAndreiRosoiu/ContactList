@@ -4,7 +4,6 @@ import au.com.anthonybruno.Gen;
 import com.github.javafaker.Faker;
 import ro.jademy.contactlist.models.*;
 import java.io.*;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Locale;
