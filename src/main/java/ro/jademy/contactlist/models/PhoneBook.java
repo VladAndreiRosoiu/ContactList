@@ -48,7 +48,6 @@ public class PhoneBook {
                         break;
                     case 6: // Exit app
                         deleteBlackListFile();
-
                         try {
                             writeFile(contacts, fileName);
                         } catch (IOException e) {
@@ -530,7 +529,7 @@ public class PhoneBook {
             writer.newLine();
             writer.flush();
         }
-        //writer.close();
+        writer.close();
     }
 
     public void readFile(Set<Contact> setList, String fileName) throws IOException {
@@ -552,5 +551,6 @@ public class PhoneBook {
                     new Address(address[0], address[1], Integer.parseInt(address[2]), Integer.parseInt(address[3]),
                             address[4], address[5]), LocalDate.now()));
         }
+        reader.close();
     }
 }

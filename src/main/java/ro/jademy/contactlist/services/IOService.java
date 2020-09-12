@@ -67,6 +67,7 @@ public class IOService {
                     new Address(address[0], address[1], Integer.parseInt(address[2]), Integer.parseInt(address[3]),
                             address[4], address[5]), LocalDate.now()));
         }
+        reader.close();
         return contactSet;
     }
 }
