@@ -2,23 +2,27 @@ package ro.jademy.contactlist.models;
 
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
-import java.io.*;
-import java.time.LocalDate;
+import ro.jademy.contactlist.services.IOService;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class PhoneBook {
 
     private static Scanner INPUT = new Scanner(System.in);
-    private File blackListFile = new File("blackList.csv");
-    private final Set<Contact> blackList = new TreeSet<>();
-    private final Set<Contact> contacts;
+    private final Set<Contact> blackListSet = new TreeSet<>();
+    private final Set<Contact> contactSet;
     private Contact searchForContact;
-    private final String fileName;
+    private final IOService ioService = new IOService();
+    private final File contactsFile;
+    private final File blackListFile = new File("blackList.csv");
 
-    public PhoneBook(Set<Contact> contacts, String fileName) {
-        this.contacts = contacts;
-        this.fileName = fileName;
+
+    public PhoneBook(Set<Contact> contactSet, File contactsFile) {
+        this.contactSet = contactSet;
+        this.contactsFile = contactsFile;
     }
 
     public void initiatePhoneBook() {
@@ -49,7 +53,7 @@ public class PhoneBook {
                     case 6: // Exit app
                         deleteBlackListFile();
                         try {
-                            writeFile(contacts, fileName);
+                            ioService.writeFile(contactSet, contactsFile);
                         } catch (IOException e) {
                             System.out.println("File not found!");
                         }
@@ -87,7 +91,7 @@ public class PhoneBook {
 
         System.out.println();
         getHeader();
-        for (Contact contact : contacts) {
+        for (Contact contact : contactSet) {
             System.out.println("_________________________________________________");
             System.out.println(contact);
         }
@@ -172,7 +176,7 @@ public class PhoneBook {
             byte option = INPUT.nextByte();
             switch (option) {
                 case 1: // Search by first name
-                    searchForContactByFirstName(contacts);
+                    searchForContactByFirstName(contactSet);
                     break;
                 case 2: // Search by last name
                     searchForContactByLastName();
@@ -188,9 +192,9 @@ public class PhoneBook {
                     displaySearchMenu();
                     searchContact();
             }
-        }catch (InputMismatchException inputMismatchException){
+        } catch (InputMismatchException inputMismatchException) {
             System.out.println("Invalid input. Please, choose between [1-4] only!");
-            INPUT=new Scanner(System.in);
+            INPUT = new Scanner(System.in);
             displaySearchMenu();
             searchContact();
         }
@@ -213,7 +217,7 @@ public class PhoneBook {
     private void searchForContactByLastName() {
         System.out.println("Last name:");
         String lastName = INPUT.next().toLowerCase();
-        Optional<Contact> contactOptional = contacts.stream()
+        Optional<Contact> contactOptional = contactSet.stream()
                 .filter(contact -> contact.getLastName().equalsIgnoreCase(lastName)).findAny();
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
@@ -228,7 +232,7 @@ public class PhoneBook {
         System.out.println("Phone number:");
         INPUT.skip("\n");
         String phoneNumber = INPUT.nextLine();
-        Optional<Contact> contactOptional = contacts.stream()
+        Optional<Contact> contactOptional = contactSet.stream()
                 .filter(contact -> contact.getPhoneNumber().getPhoneNumber().equals(phoneNumber)).findAny();
         if (contactOptional.isPresent()) {
             searchForContact = contactOptional.get();
@@ -247,13 +251,13 @@ public class PhoneBook {
             switch (option) {
                 case 1: // edit first name
                     System.out.println("You have selected: " + searchForContact.getFirstName());
-                    contacts.remove(searchForContact);
+                    contactSet.remove(searchForContact);
                     System.out.println("New First Name:");
                     String anotherFirstName = INPUT.next();
                     validateInput(anotherFirstName);
                     searchForContact.setFirstName(anotherFirstName);
                     System.out.println("Updated to: " + searchForContact.getFirstName());
-                    contacts.add(searchForContact);
+                    contactSet.add(searchForContact);
                     break;
                 case 2: // edit last name
                     System.out.println("You have selected: " + searchForContact.getLastName());
@@ -319,7 +323,7 @@ public class PhoneBook {
             }
         } catch (InputMismatchException inputMismatchException) {
             System.out.println("Invalid input. Please, choose between [1-9] only!");
-            INPUT=new Scanner(System.in);
+            INPUT = new Scanner(System.in);
             displayEditMenu();
             editContact();
         }
@@ -336,21 +340,21 @@ public class PhoneBook {
                     editContact();
                     break;
                 case 2: // Remove Contact
-                    if (contacts.contains(searchForContact)) {
-                        contacts.remove(searchForContact);
+                    if (contactSet.contains(searchForContact)) {
+                        contactSet.remove(searchForContact);
                         System.out.println("Contact deleted!");
                         searchForContact = null;
                     }
                     break;
                 case 3: // Add to Black List
-                    if (blackList.isEmpty() && !blackListFile.exists()) {
+                    if (blackListSet.isEmpty() && !blackListFile.exists()) {
                         createBlackListFile();
                     }
-                    contacts.remove(searchForContact);
-                    blackList.add(searchForContact);
+                    contactSet.remove(searchForContact);
+                    blackListSet.add(searchForContact);
                     System.out.println(searchForContact.getFirstName() + " was added to black list");
                     try {
-                        writeFile(blackList, String.valueOf(blackListFile));
+                        ioService.writeFile(blackListSet, blackListFile);
                     } catch (IOException e) {
                         System.out.println("Could not write file!");
                     }
@@ -371,9 +375,9 @@ public class PhoneBook {
                     System.out.println("Invalid input. Please, choose between [1-6] only!");
                     contactMenu();
             }
-        }catch (InputMismatchException exception){
+        } catch (InputMismatchException exception) {
             System.out.println("Invalid input. Please, choose between [1-6] only!");
-            INPUT=new Scanner(System.in);
+            INPUT = new Scanner(System.in);
             contactMenu();
         }
     }
@@ -395,7 +399,7 @@ public class PhoneBook {
             System.out.println("Last Name:");
             String newLastName = INPUT.next();
             validateInput(newLastName);
-            contacts.add(new Contact((contacts.size() + 1), newFirstName, newLastName, phoneNumber));
+            contactSet.add(new Contact((contactSet.size() + 1), newFirstName, newLastName, phoneNumber));
         } catch (ValidateInput validation) {
             System.out.println(validation.getMessage());
             addNewContact();
@@ -405,7 +409,7 @@ public class PhoneBook {
     private Set<Contact> getContactsByFirstLetter() {
         System.out.println("Enter the first letter of the first name:");
         String letter = INPUT.next();
-        Set<Contact> contactSubSet = contacts.stream()
+        Set<Contact> contactSubSet = contactSet.stream()
                 .filter(contact -> contact.getFirstName().substring(0, 1).equalsIgnoreCase(letter))
                 .collect(Collectors.toCollection(TreeSet::new));
         contactSubSet.forEach(System.out::println);
@@ -422,30 +426,29 @@ public class PhoneBook {
     }
 
     private void deleteBlackListFile() {
-        if (blackList.isEmpty() && blackListFile.exists()) {
+        if (blackListSet.isEmpty() && blackListFile.exists()) {
             blackListFile.delete();
         }
     }
 
     private void removeFromBlackList() {
         try {
-            readFile(blackList, String.valueOf(blackListFile));
-            if (blackList.isEmpty()) {
+            blackListSet.addAll(ioService.readFile(blackListFile));
+            if (blackListSet.isEmpty()) {
                 System.out.println("Black List is empty!");
-                deleteBlackListFile();
             } else {
                 getHeader();
-                blackList.forEach(System.out::println);
+                blackListSet.forEach(System.out::println);
                 System.out.println("Enter first name of the contact you want to remove:");
                 String firstName = INPUT.next();
-                Optional<Contact> optionalContact = blackList.stream()
+                Optional<Contact> optionalContact = blackListSet.stream()
                         .filter(contact -> contact.getFirstName().equalsIgnoreCase(firstName)).findAny();
                 if (optionalContact.isPresent()) {
                     System.out.println("Removed " + optionalContact.get().getFirstName() + " from Black List");
-                    blackList.remove(optionalContact.get());
-                    contacts.add(optionalContact.get());
+                    blackListSet.remove(optionalContact.get());
+                    contactSet.add(optionalContact.get());
                     try {
-                        writeFile(blackList, String.valueOf(blackListFile));
+                        ioService.writeFile(blackListSet, blackListFile);
                     } catch (IOException e) {
                         System.out.println("Could not write file!");
                     }
@@ -497,60 +500,4 @@ public class PhoneBook {
         System.out.println("Phone number entered correctly!");
     }
 
-    private String fileHeader() {
-        return "ID,FIRST_NAME,LAST_NAME,EMAIL," +
-                "COMPANY_NAME/JOB_TITLE/ADDRESS_STREET/ADDRESS_NO/" +
-                "ADDRESS_DOOR_NO/ADDRESS_FLOOR_NO/ADDRESS_CITY/" +
-                "ADDRESS_COUNTRY,COUNTRY_CODE/PHONE_NUMBER,GROUP,ADDRESS_STREET/" +
-                "ADDRESS_NO/ADDRESS_DOOR_NO/ADDRESS_FLOOR_NO/ADDRESS_CITY/ADDRESS_COUNTRY/BIRTHDATE";
-
-    }
-
-    public void writeFile(Set<Contact> setList, String fileName) throws IOException {
-
-        BufferedWriter writer = new BufferedWriter(new FileWriter(fileName));
-        writer.write(fileHeader());
-        writer.newLine();
-        for (Contact contact : setList) {
-            String string = contact.getId() + "," + contact.getFirstName() + "," + contact.getLastName() +
-                    "," + contact.getEmail() + "," + contact.getCompany().getName() +
-                    "/" + contact.getCompany().getJobTitle() + "/" + contact.getCompany().getAddress().getStreetName() +
-                    "/" + contact.getCompany().getAddress().getStreetNo() +
-                    "/" + contact.getCompany().getAddress().getDoorNo() +
-                    "/" + contact.getCompany().getAddress().getFloorNo() +
-                    "/" + contact.getCompany().getAddress().getCity() +
-                    "/" + contact.getCompany().getAddress().getCountry() +
-                    "," + contact.getPhoneNumber().getCountryCode() + "/" + contact.getPhoneNumber().getPhoneNumber() +
-                    "," + contact.getGroup().getGroupName() + "," + contact.getAddress().getStreetName() +
-                    "/" + contact.getAddress().getStreetNo() + "/" + contact.getAddress().getDoorNo() +
-                    "/" + contact.getAddress().getFloorNo() + "/" + contact.getAddress().getCity() +
-                    "/" + contact.getAddress().getCountry() + "," + contact.getBirthDate();
-            writer.write(string);
-            writer.newLine();
-            writer.flush();
-        }
-        writer.close();
-    }
-
-    public void readFile(Set<Contact> setList, String fileName) throws IOException {
-
-        BufferedReader reader = new BufferedReader(new FileReader(fileName));
-
-        String line;
-        String header = reader.readLine();
-        while ((line = reader.readLine()) != null) {
-            String[] strings = line.split(",");
-            String[] company = strings[4].split("/");
-            String[] phoneNo = strings[5].split("/");
-            String[] address = strings[7].split("/");
-
-            setList.add(new Contact(Integer.parseInt(strings[0]), strings[1], strings[2], strings[3],
-                    new Company(company[0], company[1], new Address(company[2], company[3], Integer.parseInt(company[4]),
-                            Integer.parseInt(company[5]), company[6], company[7])),
-                    new PhoneNumber(phoneNo[0], phoneNo[1]), Group.lookup(strings[6], Group.MY_CONTACTS),
-                    new Address(address[0], address[1], Integer.parseInt(address[2]), Integer.parseInt(address[3]),
-                            address[4], address[5]), LocalDate.now()));
-        }
-        reader.close();
-    }
 }
