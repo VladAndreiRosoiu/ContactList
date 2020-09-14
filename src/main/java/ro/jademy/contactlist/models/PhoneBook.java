@@ -365,8 +365,13 @@ public class PhoneBook {
                     System.out.println("Contact added to Favorites!");
                     break;
                 case 5: // Removed from Favorites
-                    searchForContact.setGroup(Group.MY_CONTACTS);
-                    System.out.println("Contact removed from Favorites!");
+                    if(searchForContact.getGroup().getGroupName().equals(Group.FAVORITE.getGroupName())){
+                        searchForContact.setGroup(Group.MY_CONTACTS);
+                        System.out.println("Contact removed from Favorites!");
+                    }else {
+                        System.out.println("Selected contact group is "+searchForContact.getGroup().getGroupName()+".");
+                    }
+
                     break;
                 case 6: // Return to Main Menu
                     initiatePhoneBook();
