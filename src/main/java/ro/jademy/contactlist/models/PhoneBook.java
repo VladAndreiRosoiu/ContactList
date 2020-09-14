@@ -59,6 +59,8 @@ public class PhoneBook {
                         break;
                     case 7: // Exit app
                         //ioService.writeFile(contactSet, contactsFile);
+                        deleteBlackListFIle();
+                        ioService.writeFile(contactSet,contactsFile);
                         System.exit(0);
                         break;
                     default: // For invalid inputs
@@ -453,6 +455,12 @@ public class PhoneBook {
         }
     }
 
+    private void deleteBlackListFIle(){
+        if (blackListSet.isEmpty() && blackListFile.exists()) {
+            blackListFile.delete();
+        }
+    }
+
     private void removeFromBlackList() {
         try {
             blackListSet.addAll(ioService.readFile(blackListFile));
@@ -469,9 +477,6 @@ public class PhoneBook {
                     System.out.println("Removed " + optionalContact.get().getFirstName() + " from Black List");
                     blackListSet.remove(optionalContact.get());
                     contactSet.add(optionalContact.get());
-                    if (blackListSet.isEmpty() && blackListFile.exists()) {
-                        blackListFile.delete();
-                    }
                     try {
                         ioService.writeFile(blackListSet, blackListFile);
                     } catch (IOException e) {
@@ -525,6 +530,8 @@ public class PhoneBook {
         System.out.println("Phone number entered correctly!");
     }
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Backup Functionality ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
     private void backupMenu() {
         try {
             displayBackUpMenu();
@@ -545,6 +552,7 @@ public class PhoneBook {
                     break;
                 case 4:
                     //delete backup
+                    deleteBackup();
                     break;
                 case 5:
                     initiatePhoneBook();
@@ -560,29 +568,45 @@ public class PhoneBook {
     }
 
     private void viewBackups() {
-        File [] directories = backupDirectory.listFiles();
-
-        for (File directory: directories){
-            File [] files = directory.listFiles();
-            Arrays.stream(files).forEach(file -> System.out.println(file.getName()));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        File[] directories = backupDirectory.listFiles();
+        if (directories != null) {
+            for (int i = 0; i < directories.length; i++) {
+                System.out.println((i + 1) + "-Backup \"" + directories[i].getName() + "\" created on " + simpleDateFormat.format(directories[i].lastModified()));
+            }
         }
+
 
     }
 
     private void restoreBackup() {
         viewBackups();
+        System.out.println();
         System.out.println("Please enter the number of the backup you want to restore:");
         int backupNumber = INPUT.nextInt() - 1;
         try {
-            File[] files = backupDirectory.listFiles();
-            if (files != null) {
-                if (files[backupNumber].getName().contains("BlackList")) {
-                    Files.copy(files[backupNumber].toPath(), blackListFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Blacklist file backup restores successfully!");
+            File[] directories = backupDirectory.listFiles();
+            if (directories != null) {
+                if (directories[backupNumber].listFiles().length > 1) {
+                    File[] files = directories[backupNumber].listFiles();
+                    for (File file : files) {
+                        if (file.getName().startsWith("backup")) {
+                            Files.copy(file.toPath(), contactsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            System.out.println("Contacts file backup restored successfully!");
+                            contactSet.addAll(ioService.readFile(contactsFile));
+                        } else {
+                            Files.copy(file.toPath(), blackListFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                            blackListSet.addAll(ioService.readFile(blackListFile));
+                            System.out.println("Blacklist file backup restored successfully!");
+                        }
+                    }
                 } else {
-                    Files.copy(files[backupNumber].toPath(), contactsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Backup restored successfully!");
-                    contactSet.addAll(ioService.readFile(contactsFile));
+                    File[] files = directories[backupNumber].listFiles();
+                    for (File file : files) {
+                        Files.copy(file.toPath(), contactsFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                        System.out.println("Contacts file backup restores successfully!");
+                        contactSet.addAll(ioService.readFile(contactsFile));
+                    }
                 }
             }
         } catch (IOException e) {
@@ -591,57 +615,42 @@ public class PhoneBook {
         }
     }
 
-//    private void doBackup() {
-//        if (!backupDirectory.exists()) {
-//            backupDirectory.mkdir();
-//        }
-//        System.out.println("Enter backup file name (leave blank for default):");
-//        INPUT.skip("\n");
-//        String backupFileName = INPUT.nextLine();
-//        if (backupFileName.equalsIgnoreCase("")) {
-//            backupFileName = "backup_";
-//        }
-//        backupFileName = backupFileName + System.currentTimeMillis() + ".csv";
-//        File backupFile = new File("Backup/" + backupFileName);
-//
-//        try {
-//            if (blackListFile.exists()) {
-//                String backupBlackListFileName = "*"+backupFileName;
-//                File backupBlacklistFile = new File("Backup/" + backupBlackListFileName);
-//                Files.copy(blackListFile.toPath(), backupBlacklistFile.toPath());
-//            }
-//            Files.copy(contactsFile.toPath(), backupFile.toPath());
-//            System.out.println("Backup successfully created!");
-//        } catch (IOException e) {
-//            System.out.println(e.getMessage());
-//        }
-//    }
-
-    private void doBackup(){
-        String directoryName="Backup/"+"backup_"+System.currentTimeMillis();
-        String fileName="backupFile_"+System.currentTimeMillis()+".csv";
-        File newDirectory=new File(directoryName);
-        newDirectory.mkdir();
-        try{
+    private void doBackup() {
+        if (!backupDirectory.exists()) {
+            backupDirectory.mkdir();
+        }
+        String directoryName = "Backup/" + "backup_" + System.currentTimeMillis();
+        String fileName = "backupFile_" + System.currentTimeMillis() + ".csv";
+        File newBackupDirectory = new File(directoryName);
+        newBackupDirectory.mkdir();
+        try {
             if (blackListFile.exists()) {
-                String backupBlackListFileName = "backupBLFile_"+System.currentTimeMillis()+".csv";
-                File backupBlacklistFile = new File(directoryName+"/" + backupBlackListFileName);
+                String backupBlackListFileName = "BLFileBackup_" + System.currentTimeMillis() + ".csv";
+                File backupBlacklistFile = new File(directoryName + "/" + backupBlackListFileName);
                 Files.copy(blackListFile.toPath(), backupBlacklistFile.toPath());
             }
-            File backupFile=new File(directoryName+"/"+fileName);
-            Files.copy(contactsFile.toPath(),backupFile.toPath());
-        }catch (IOException e){
+            File backupFile = new File(directoryName + "/" + fileName);
+            Files.copy(contactsFile.toPath(), backupFile.toPath());
+            System.out.println("Backup created successfully!");
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    private void deleteBackup() {
+    private void deleteBackup(){
         viewBackups();
-        System.out.println("Please enter the number of the backup you want to remove:");
-        File[] files = backupDirectory.listFiles();
-        int fileNumber = INPUT.nextInt();
-        files[fileNumber].delete();
-        System.out.println("File deleted successfully!");
+        System.out.println();
+        System.out.println("Please enter the number of the backup you want to delete:");
+        int backupNumber = INPUT.nextInt() - 1;
+        File [] directories = backupDirectory.listFiles();
+        File [] files = directories[backupNumber].listFiles();
+        if (files.length==2){
+            files[0].delete();
+            files[1].delete();
+        }else {
+            files[0].delete();
+        }
+        System.out.println("Backup deleted successfully!");
     }
 
 }
