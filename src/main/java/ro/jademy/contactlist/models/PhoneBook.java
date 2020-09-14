@@ -3,9 +3,11 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
 import ro.jademy.contactlist.services.IOService;
-
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,9 @@ public class PhoneBook {
     private final IOService ioService = new IOService();
     private final File contactsFile;
     private final File blackListFile = new File("blackList.csv");
+    private File contactsBackupFile = new File("backup.csv");
+    private File blackListBackupFile = new File("black-listBackup.csv");
+    private Path dirPath = Paths.get("E:\\Java Projects\\ContactList\\Backups");
 
 
     public PhoneBook(Set<Contact> contactSet, File contactsFile) {
@@ -47,7 +52,11 @@ public class PhoneBook {
                     case 5: // Show Black List
                         removeFromBlackList();
                         break;
-                    case 6: // Exit app
+                    case 6: // Back-up Option -> (Back-up Submenu)
+                        displayBackUpMenu();
+                        backUpMenu();
+                        break;
+                    case 7: // Exit app
                         deleteBlackListFile();
                         try {
                             ioService.writeFile(contactSet, contactsFile);
@@ -57,7 +66,7 @@ public class PhoneBook {
                         System.exit(0);
                         break;
                     default: // For invalid inputs
-                        System.out.println("Invalid input. Please, choose between [1-6] only!");
+                        System.out.println("Invalid input. Please, choose between [1-7] only!");
                 }
             } catch (InputMismatchException mismatchException) {
                 System.out.println("Invalid input. Please, choose only the displayed options!");
@@ -66,7 +75,7 @@ public class PhoneBook {
         } while (true);
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~ All menu's printing methods ~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Display Menus Printing Methods ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void displayMainMenu() {
         System.out.println();
@@ -80,44 +89,11 @@ public class PhoneBook {
         System.out.println("         |    3. Search Contact      |         ");
         System.out.println("         |    4. Add new Contact     |         ");
         System.out.println("         |    5. Show Black List     |         ");
-        System.out.println("         |    6. Exit Phone Book     |         ");
+        System.out.println("         |    6. Backup Portal       |         ");
+        System.out.println("         |    7. Exit Phone Book     |         ");
         System.out.println("         +---------------------------+         ");
     }
 
-    private void displayAllContacts() {
-
-        System.out.println();
-        getHeader();
-        for (Contact contact : contactSet) {
-            System.out.println("_________________________________________________");
-            System.out.println(contact);
-        }
-    }
-
-    private void displaySearchForContactInfo() {
-        System.out.println("\nContact: " + searchForContact.getFirstName() + " " + searchForContact.getLastName());
-        System.out.println("Phone Number: " + searchForContact.getPhoneNumber().getCountryCode() + " " +
-                searchForContact.getPhoneNumber().getPhoneNumber());
-        System.out.println("Company: " + searchForContact.getCompany().getName() +
-                " | Job Title: " + searchForContact.getCompany().getJobTitle());
-        System.out.println("Company Address: " + searchForContact.getCompany().getAddress().getStreetName() +
-                " " + searchForContact.getCompany().getAddress().getStreetNo());
-        if (searchForContact.getCompany().getAddress().getFloorNo() >= 4) {
-            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "th");
-        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 3) {
-            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "rd");
-        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 2) {
-            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "nd");
-        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 1) {
-            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "st");
-        } else {
-            System.out.println("Ground Floor");
-        }
-        System.out.println("E-mail: " + searchForContact.getEmail());
-        System.out.println("Address - City: " + searchForContact.getAddress().getCity());
-        System.out.println("Address - Country: " + searchForContact.getAddress().getCountry());
-        System.out.println("Group: " + searchForContact.getGroup());
-    }
 
     private void displayContactMenu() { // This is a subMenu to 'Select Contact' menu option from Main Menu
         System.out.println("+---------------------------------------------+");
@@ -147,6 +123,19 @@ public class PhoneBook {
         System.out.println("         +---------------------------+         ");
     }
 
+    private void displayBackUpMenu() { // This is a subMenu to 'Back-up Portal' menu option from Main Menu
+        System.out.println("+---------------------------------------------+");
+        System.out.println("|                 PHONE BOOK                  |");
+        System.out.println("+---------------------------------------------+");
+        System.out.println();
+        System.out.println("         +------  BACKUP MENU  ------+         ");
+        System.out.println("         |  1. Backup data           |         ");  // this option creates a backup file to the current contactList
+        System.out.println("         |  2. Restore data          |         ");  // this option restores to a previous set backup
+        System.out.println("         |  3. View All Backups      |         ");  // this option displays all backups created & available (details)
+        System.out.println("         |  4. Return to Main Menu   |         ");
+        System.out.println("         +---------------------------+         ");
+    }
+
     private void displayEditMenu() {     // This is a subMenu to 'Edit Contact' menu option from Contact Menu
         System.out.println("+---------------------------------------------+");
         System.out.println("|                 PHONE BOOK                  |");
@@ -165,7 +154,61 @@ public class PhoneBook {
         System.out.println("        +-----------------------------+        ");
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~ All searching methods ~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Logic Impl - Menus Printing Methods ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private void displayAllContacts() {
+
+        System.out.println();
+        getHeader();
+        for (Contact contact : contactSet) {
+            System.out.println("_________________________________________________");
+            System.out.println(contact);
+        }
+    }
+
+    private Set<Contact> getContactsByFirstLetter() {
+        System.out.println("Enter the first letter of the first name:");
+        String letter = INPUT.next();
+        Set<Contact> contactSubSet = contactSet.stream()
+                .filter(contact -> contact.getFirstName().substring(0, 1).equalsIgnoreCase(letter))
+                .collect(Collectors.toCollection(TreeSet::new));
+        contactSubSet.forEach(System.out::println);
+        return contactSubSet;
+    }
+
+    private void getHeader() {
+        System.out.println(StringUtils.center("  FIRST NAME", 15, " ") +
+                StringUtils.center("  LAST NAME", 16, " ") +
+                StringUtils.center(" PHONE NUMBER", 16, " "));
+    }
+
+    private void displaySearchForContactInfo() {
+        System.out.println("\nContact: " + searchForContact.getFirstName() + " " + searchForContact.getLastName());
+        System.out.println("Phone Number: " + searchForContact.getPhoneNumber().getCountryCode() + " " +
+                searchForContact.getPhoneNumber().getPhoneNumber());
+        System.out.println("Company: " + searchForContact.getCompany().getName() +
+                " | Job Title: " + searchForContact.getCompany().getJobTitle());
+        System.out.println("Company Address: " + searchForContact.getCompany().getAddress().getStreetName() +
+                " " + searchForContact.getCompany().getAddress().getStreetNo());
+        if (searchForContact.getCompany().getAddress().getFloorNo() >= 4) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "th");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 3) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "rd");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 2) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "nd");
+        } else if (searchForContact.getCompany().getAddress().getFloorNo() == 1) {
+            System.out.println("Floor: " + searchForContact.getCompany().getAddress().getFloorNo() + "st");
+        } else {
+            System.out.println("Ground Floor");
+        }
+        System.out.println("E-mail: " + searchForContact.getEmail());
+        System.out.println("Address - City: " + searchForContact.getAddress().getCity());
+        System.out.println("Address - Country: " + searchForContact.getAddress().getCountry());
+        System.out.println("Group: " + searchForContact.getGroup());
+    }
+
+
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Searching Methods & Sub-menus Impl ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void searchContact() {
         try {
@@ -194,6 +237,34 @@ public class PhoneBook {
             INPUT = new Scanner(System.in);
             displaySearchMenu();
             searchContact();
+        }
+    }
+
+    private void backUpMenu() {
+        try {
+            System.out.println("Enter an option:");
+            byte option = INPUT.nextByte();
+            switch (option) {
+                case 1: // Backup data
+                    createBackupsDir();
+                    break;
+                case 2: // Restore data (Load the backup file)
+
+                    break;
+                case 3: // View All Backups
+
+                    break;
+                case 4: // Return to Main Menu
+                    initiatePhoneBook();
+                    break;
+                default: // For invalid inputs
+                    System.out.println("Invalid input. Please, choose between [1-4] only!");
+                    displayBackUpMenu();
+            }
+        } catch (InputMismatchException inputMismatchException) {
+            System.out.println("Invalid input. Please, choose between [1-4] only!");
+            INPUT = new Scanner(System.in);
+            displayBackUpMenu();
         }
     }
 
@@ -243,7 +314,7 @@ public class PhoneBook {
         }
     }
 
-    // ~~~~~~~~~~~~~~~~~~~~~~~~ All contact editing methods ~~~~~~~~~~~~~~~~~~~~~~~~
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Edit Methods & Sub-menus Impl ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void editContact() {
         try {
@@ -365,11 +436,11 @@ public class PhoneBook {
                     System.out.println("Contact added to Favorites!");
                     break;
                 case 5: // Removed from Favorites
-                    if(searchForContact.getGroup().getGroupName().equals(Group.FAVORITE.getGroupName())){
+                    if (searchForContact.getGroup().getGroupName().equals(Group.FAVORITE.getGroupName())) {
                         searchForContact.setGroup(Group.MY_CONTACTS);
                         System.out.println("Contact removed from Favorites!");
-                    }else {
-                        System.out.println("Selected contact group is "+searchForContact.getGroup().getGroupName()+".");
+                    } else {
+                        System.out.println("Selected contact group is " + searchForContact.getGroup().getGroupName() + ".");
                     }
 
                     break;
@@ -387,6 +458,7 @@ public class PhoneBook {
         }
     }
 
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Adding new Contact Impl ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void addNewContact() {
         try {
@@ -411,15 +483,7 @@ public class PhoneBook {
         }
     }
 
-    private Set<Contact> getContactsByFirstLetter() {
-        System.out.println("Enter the first letter of the first name:");
-        String letter = INPUT.next();
-        Set<Contact> contactSubSet = contactSet.stream()
-                .filter(contact -> contact.getFirstName().substring(0, 1).equalsIgnoreCase(letter))
-                .collect(Collectors.toCollection(TreeSet::new));
-        contactSubSet.forEach(System.out::println);
-        return contactSubSet;
-    }
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Black List Impl ~~~~~~~~~~~~~~~~~~~~~~~~
 
     private void createBlackListFile() {
         try {
@@ -464,11 +528,60 @@ public class PhoneBook {
         }
     }
 
-    private void getHeader() {
-        System.out.println(StringUtils.center("  FIRST NAME", 15, " ") +
-                StringUtils.center("  LAST NAME", 16, " ") +
-                StringUtils.center(" PHONE NUMBER", 16, " "));
+    // ~~~~~~~~~~~~~~~~~~~~~~~~ Backups Impl ~~~~~~~~~~~~~~~~~~~~~~~~
+
+    private void createBackupsDir() {
+        try {
+            Files.createDirectory(dirPath);
+            System.out.println("Backups directory created!");
+        } catch (FileAlreadyExistsException existsException) {
+            createBackup();
+        } catch (IOException ioException) {
+            System.out.println("Failed to create directory!" + ioException.getMessage());
+        }
     }
+
+    private void createBackup() {
+        try {
+            Path fromContactsFile = Paths.get(contactsFile.getAbsolutePath());
+            Path toContactsFile = Paths.get(contactsBackupFile.getAbsolutePath());
+            if (blackListFile.exists()) {
+                Path fromBlackListFile = Paths.get(blackListFile.getAbsolutePath());
+                Path toBlackListFile = Paths.get(blackListBackupFile.getAbsolutePath());
+                System.out.println("Enter the name of your backup file:");
+                String bLBackupFileName = INPUT.next();
+                Files.copy(fromBlackListFile, toBlackListFile, StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.COPY_ATTRIBUTES);
+                moveFile("E:\\Java Projects\\ContactList\\black-listBackup.csv",
+                        "E:\\Java Projects\\ContactList\\Backups\\" + bLBackupFileName + ".csv");
+                System.out.println(bLBackupFileName + " file has been created!");
+            }
+            System.out.println("Enter the name of your backup file:");
+            String backupFileName = INPUT.next();
+            Files.copy(fromContactsFile, toContactsFile, StandardCopyOption.REPLACE_EXISTING,
+                    StandardCopyOption.COPY_ATTRIBUTES);
+            moveFile("E:\\Java Projects\\ContactList\\backup.csv",
+                    "E:\\Java Projects\\ContactList\\Backups\\" + backupFileName + ".csv");
+            System.out.println(backupFileName + " file has been created!");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void moveFile(String source, String destination) {
+        Path result = null;
+        try {
+            result = Files.move(Paths.get(source), Paths.get(destination));
+        } catch (IOException ioException) {
+            System.out.println("Exception while moving file: " + ioException.getMessage());
+        }
+        if (result != null) {
+            System.out.println("File moved successfully!");
+        } else {
+            System.out.println("File movement failed!");
+        }
+    }
+
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~ Input validation ~~~~~~~~~~~~~~~~~~~~~~~~
 
