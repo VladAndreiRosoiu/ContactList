@@ -36,12 +36,10 @@ public class PhoneBook {
                         break;
                     case 2: // Select a contact
                         searchForContactByFirstName(getContactsByFirstLetter());
-                        contactMenu();
                         break;
                     case 3: // Search a contact
                         displaySearchMenu();
                         searchContact();
-                        contactMenu();
                         break;
                     case 4: // Add new contact
                         addNewContact();
@@ -208,6 +206,7 @@ public class PhoneBook {
             searchForContact = contactOptional.get();
             System.out.println("\nContact found!");
             displaySearchForContactInfo();
+            contactMenu();
         } else {
             System.out.println("\nContact not found!");
         }
@@ -222,6 +221,7 @@ public class PhoneBook {
             searchForContact = contactOptional.get();
             System.out.println("Contact found!");
             displaySearchForContactInfo();
+            contactMenu();
         } else {
             System.out.println("Contact not found!");
         }
@@ -237,6 +237,7 @@ public class PhoneBook {
             searchForContact = contactOptional.get();
             System.out.println("Contact found!");
             displaySearchForContactInfo();
+            contactMenu();
         } else {
             System.out.println("Contact not found!");
         }
