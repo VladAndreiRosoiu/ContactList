@@ -552,7 +552,9 @@ public class PhoneBook {
                     break;
                 case 4:
                     //delete backup
-                    deleteBackup();
+                    System.out.println("Please enter the backup number you want to delete:");
+                    int backupNumber=INPUT.nextInt();
+                    deleteBackup(backupNumber);
                     break;
                 case 5:
                     initiatePhoneBook();
@@ -609,6 +611,7 @@ public class PhoneBook {
                     }
                 }
             }
+            deleteBackup(backupNumber);
         } catch (IOException e) {
             System.out.println("Backup not applied!");
             System.out.println("Something went wrong!");
@@ -637,11 +640,7 @@ public class PhoneBook {
         }
     }
 
-    private void deleteBackup(){
-        viewBackups();
-        System.out.println();
-        System.out.println("Please enter the number of the backup you want to delete:");
-        int backupNumber = INPUT.nextInt() - 1;
+    private void deleteBackup(int backupNumber){
         File [] directories = backupDirectory.listFiles();
         File [] files = directories[backupNumber].listFiles();
         if (files.length==2){
