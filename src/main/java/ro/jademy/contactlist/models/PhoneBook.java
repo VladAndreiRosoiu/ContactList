@@ -41,7 +41,6 @@ public class PhoneBook {
                     case 3: // Search a contact
                         displaySearchMenu();
                         searchContact();
-                        displayContactMenu();
                         contactMenu();
                         break;
                     case 4: // Add new contact
