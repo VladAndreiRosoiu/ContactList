@@ -650,6 +650,7 @@ public class PhoneBook {
         }else {
             files[0].delete();
         }
+        directories[backupNumber].delete();
         System.out.println("Backup deleted successfully!");
     }
 
