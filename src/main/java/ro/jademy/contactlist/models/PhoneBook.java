@@ -58,13 +58,12 @@ public class PhoneBook {
                         backupMenu();
                         break;
                     case 7: // Exit app
-                        //ioService.writeFile(contactSet, contactsFile);
                         deleteBlackListFIle();
                         ioService.writeFile(contactSet,contactsFile);
                         System.exit(0);
                         break;
                     default: // For invalid inputs
-                        System.out.println("Invalid input. Please, choose between [1-6] only!");
+                        System.out.println("Invalid input. Please, choose between [1-7] only!");
                 }
             } catch (InputMismatchException mismatchException) {
                 System.out.println("Invalid input. Please, choose only the displayed options!");
@@ -182,10 +181,10 @@ public class PhoneBook {
         System.out.println("+---------------------------------------------+");
         System.out.println();
         System.out.println("         +------  BACKUP MENU  ------+         ");
-        System.out.println("         |  1. Backup data           |         ");  // this option creates a backup file to the current contactList
-        System.out.println("         |  2. View all backups      |         ");  // this option restores to a previous set backup
-        System.out.println("         |  3. Restore backup        |         ");  // this option displays all backups created & available (details)
-        System.out.println("         |  4. Delete backup         |         ");  // this option displays all backups created & available (details)
+        System.out.println("         |  1. Backup data           |         ");
+        System.out.println("         |  2. View all backups      |         ");
+        System.out.println("         |  3. Restore backup        |         ");
+        System.out.println("         |  4. Delete backup         |         ");
         System.out.println("         |  5. Return to Main Menu   |         ");
         System.out.println("         +---------------------------+         ");
     }
