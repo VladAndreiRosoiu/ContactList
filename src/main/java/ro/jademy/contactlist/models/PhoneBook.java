@@ -3,6 +3,7 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
 import ro.jademy.contactlist.services.IOService;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,6 +42,7 @@ public class PhoneBook {
                         break;
                     case 2: // Select a contact
                         searchForContactByFirstName(getContactsByFirstLetter());
+
                         ioService.writeFile(contactSet, contactsFile);
                         break;
                     case 3: // Search a contact
@@ -60,7 +62,7 @@ public class PhoneBook {
                         break;
                     case 7: // Exit app
                         deleteBlackListFIle();
-                        ioService.writeFile(contactSet,contactsFile);
+                        ioService.writeFile(contactSet, contactsFile);
                         System.exit(0);
                         break;
                     default: // For invalid inputs
@@ -69,9 +71,6 @@ public class PhoneBook {
             } catch (InputMismatchException mismatchException) {
                 System.out.println("Invalid input. Please, choose only the displayed options!");
                 INPUT = new Scanner(System.in); // to break the loop
-            } catch (IOException ioException) {
-                System.out.println("File not found!");
-                System.exit(0);
             }
         } while (true);
     }
@@ -419,11 +418,7 @@ public class PhoneBook {
                     contactSet.remove(searchForContact);
                     blackListSet.add(searchForContact);
                     System.out.println(searchForContact.getFirstName() + " was added to black list");
-                    try {
-                        ioService.writeFile(blackListSet, blackListFile);
-                    } catch (IOException e) {
-                        System.out.println("Could not write file!");
-                    }
+                    ioService.writeFile(blackListSet, blackListFile);
                     searchForContact = null;
                     break;
                 case 4: // Add to Favorites
@@ -464,7 +459,7 @@ public class PhoneBook {
         }
     }
 
-    private void deleteBlackListFIle(){
+    private void deleteBlackListFIle() {
         if (blackListSet.isEmpty() && blackListFile.exists()) {
             blackListFile.delete();
         }
@@ -486,11 +481,7 @@ public class PhoneBook {
                     System.out.println("Removed " + optionalContact.get().getFirstName() + " from Black List");
                     blackListSet.remove(optionalContact.get());
                     contactSet.add(optionalContact.get());
-                    try {
-                        ioService.writeFile(blackListSet, blackListFile);
-                    } catch (IOException e) {
-                        System.out.println("Could not write file!");
-                    }
+                    ioService.writeFile(blackListSet, blackListFile);
                 }
             }
         } catch (IOException e) {
@@ -515,7 +506,6 @@ public class PhoneBook {
         if (phoneNumber.getCountryCode().charAt(0) != '+') {
             throw new ValidateInput("Country code must start with '+' sign!");
         }
-
         char[] countryCodeChars = phoneNumber.getCountryCode().substring(1).toCharArray();
         for (Character character : countryCodeChars) {
             if (!Character.isDigit(character)) {
@@ -556,7 +546,7 @@ public class PhoneBook {
                 case 4:
                     //delete backup
                     System.out.println("Please enter the backup number you want to delete:");
-                    int backupNumber=INPUT.nextInt();
+                    int backupNumber = INPUT.nextInt();
                     deleteBackup(backupNumber);
                     break;
                 case 5:
@@ -641,13 +631,13 @@ public class PhoneBook {
         }
     }
 
-    private void deleteBackup(int backupNumber){
-        File [] directories = backupDirectory.listFiles();
-        File [] files = directories[backupNumber].listFiles();
-        if (files.length==2){
+    private void deleteBackup(int backupNumber) {
+        File[] directories = backupDirectory.listFiles();
+        File[] files = directories[backupNumber].listFiles();
+        if (files.length == 2) {
             files[0].delete();
             files[1].delete();
-        }else {
+        } else {
             files[0].delete();
         }
         directories[backupNumber].delete();
