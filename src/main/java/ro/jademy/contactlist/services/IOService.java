@@ -3,6 +3,8 @@ package ro.jademy.contactlist.services;
 import au.com.anthonybruno.Gen;
 import com.github.javafaker.Faker;
 import ro.jademy.contactlist.models.*;
+
+import java.awt.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,31 +38,48 @@ public class IOService {
         return contactSet;
     }
 
-    public void writeFile(Set<Contact> contactSet, File file) throws IOException {
+    public void writeFile(Set<Contact> contactSet, File file) {
 
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-        writer.write(fileHeader());
-        writer.newLine();
-        for (Contact contact : contactSet) {
-            String string = contact.getId() + "," + contact.getFirstName() + "," + contact.getLastName() +
-                    "," + contact.getEmail() + "," + contact.getCompany().getName() +
-                    "/" + contact.getCompany().getJobTitle() + "/" + contact.getCompany().getAddress().getStreetName() +
-                    "/" + contact.getCompany().getAddress().getStreetNo() +
-                    "/" + contact.getCompany().getAddress().getDoorNo() +
-                    "/" + contact.getCompany().getAddress().getFloorNo() +
-                    "/" + contact.getCompany().getAddress().getCity() +
-                    "/" + contact.getCompany().getAddress().getCountry() +
-                    "," + contact.getPhoneNumber().getCountryCode() + "/" + contact.getPhoneNumber().getPhoneNumber() +
-                    "," + contact.getGroup().getGroupName() + "," + contact.getAddress().getStreetName() +
-                    "/" + contact.getAddress().getStreetNo() + "/" + contact.getAddress().getDoorNo() +
-                    "/" + contact.getAddress().getFloorNo() + "/" + contact.getAddress().getCity() +
-                    "/" + contact.getAddress().getCountry() + "," + contact.getBirthDate();
-            writer.write(string);
-            writer.newLine();
-            writer.flush();
-        }
-        writer.close();
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                    writer.write(fileHeader());
+                    String string = "";
+                    writer.newLine();
+                    for (Contact contact : contactSet) {
+                        string += contact.getId() + "," + contact.getFirstName() + "," + contact.getLastName() +
+                                "," + contact.getEmail() + "," + contact.getCompany().getName() +
+                                "/" + contact.getCompany().getJobTitle() + "/" + contact.getCompany().getAddress().getStreetName() +
+                                "/" + contact.getCompany().getAddress().getStreetNo() +
+                                "/" + contact.getCompany().getAddress().getDoorNo() +
+                                "/" + contact.getCompany().getAddress().getFloorNo() +
+                                "/" + contact.getCompany().getAddress().getCity() +
+                                "/" + contact.getCompany().getAddress().getCountry() +
+                                "," + contact.getPhoneNumber().getCountryCode() + "/" + contact.getPhoneNumber().getPhoneNumber() +
+                                "," + contact.getGroup().getGroupName() + "," + contact.getAddress().getStreetName() +
+                                "/" + contact.getAddress().getStreetNo() + "/" + contact.getAddress().getDoorNo() +
+                                "/" + contact.getAddress().getFloorNo() + "/" + contact.getAddress().getCity() +
+                                "/" + contact.getAddress().getCountry() + "," + contact.getBirthDate() + "\n";
+                    }
+                    try {
+                        Thread.sleep(20000);
+                        System.out.println("Synchronization finished: ");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    writer.write(string);
+                    writer.flush();
+                } catch (IOException ioException) {
+                    System.out.println("Some error!");
+                }
+
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
     }
+
 
     private String fileHeader() {
         return "ID,FIRST_NAME,LAST_NAME,EMAIL," +
