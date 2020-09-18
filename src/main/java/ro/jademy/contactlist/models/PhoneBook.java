@@ -3,7 +3,6 @@ package ro.jademy.contactlist.models;
 import org.apache.commons.lang3.StringUtils;
 import ro.jademy.contactlist.customexceptions.ValidateInput;
 import ro.jademy.contactlist.services.IOService;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -62,7 +61,6 @@ public class PhoneBook {
                         break;
                     case 7: // Exit app
                         deleteBlackListFIle();
-                        ioService.writeFile(contactSet, contactsFile);
                         System.exit(0);
                         break;
                     default: // For invalid inputs
