@@ -3,7 +3,6 @@ package ro.jademy.contactlist.services;
 import au.com.anthonybruno.Gen;
 import com.github.javafaker.Faker;
 import ro.jademy.contactlist.models.*;
-
 import java.awt.*;
 import java.io.*;
 import java.time.LocalDate;
@@ -73,7 +72,6 @@ public class IOService {
                 } catch (IOException ioException) {
                     System.out.println("Some error!");
                 }
-
             }
         };
         Thread thread = new Thread(runnable);
